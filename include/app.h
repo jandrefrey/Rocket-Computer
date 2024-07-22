@@ -25,6 +25,29 @@ public:
 
 private:
     int altitude;
+    typedef enum {
+        IDLE,
+        LAUNCH,
+        BURNOUT,
+        APOGEE,
+        LANDED
+    } flightStage_t;
+
+    flightStage_t flightStage;
+
+    void measureSensors();
+    void filterMeasurements();
+    void rxTelemetry();
+    void txTelemetry();
+    void detectLaunch();
+    void storeFlash();
+    void detectBurnout();
+    void detectApogee();
+    void deployCharges();
+    void detectLanding();
+    void storeSD();
+    void calibrateSensors();
+    void setLaunchReady();
 };
 
 #endif

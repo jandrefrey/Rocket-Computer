@@ -20,11 +20,31 @@ hardware_c::~hardware_c() {
     // Cleanup resources if any
 }
 
-/*** init method implementation ***/
+/*** Public Functions definitions ***/
 void hardware_c::init() {
-    // Initialization code here
+    hardware_c::sensorInit();
+    hardware_c::batteryInit();
+    hardware_c::pyroInit();
+    hardware_c::radioInit();
 }
 
 void hardware_c::update() {
-    // Initialization code here
+    
+}
+
+/*** Private Functions definitions ***/
+void hardware_c::sensorInit() {
+
+}
+
+void hardware_c::batteryInit() {
+
+}
+
+void hardware_c::pyroInit() {
+
+}
+
+void hardware_c::radioInit() {
+    
 }

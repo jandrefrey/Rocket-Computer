@@ -7,21 +7,23 @@
  *******************************************************************************
  */
 
+/*** Includes ***/
 #include <Arduino.h>
 #include "hardware.h"
 #include "app.h"
 
-
+/*** Declerations ***/
 hardware_c myHardware;
 app_c myApp;
 
+/*** Setup ***/
 void setup() {
   myHardware.init();
   myApp.init();
 }
 
+/*** Loop ***/
 void loop() {
   myHardware.update();
   myApp.update();
 }
-

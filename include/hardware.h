@@ -27,6 +27,11 @@ public:
 
 private:
     int deviceId;
+
+    void sensorInit();
+    void batteryInit();
+    void pyroInit();
+    void radioInit();
 };
 
 #endif
