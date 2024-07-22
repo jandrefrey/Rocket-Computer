@@ -1,30 +1,30 @@
 /**
  *******************************************************************************
- * \file        hardware.cpp
- * \brief       hardware library source file
- * \date        2024/07/21
+ * \file        app.cpp
+ * \brief       app library source file
+ * \date        2024/07/22
  * \author      Jandre Frey
  *******************************************************************************
  */
 
 /*** Includes ***/
-#include "hardware.h"
+#include "app.h"
 
 /*** Constructor implementation ***/
-hardware_c::hardware_c() {
-    // Initialize deviceId or other constructor logic here
+app_c::app_c() {
+    // Initialize constructor logic here
 }
 
 /*** Destructor implementation ***/
-hardware_c::~hardware_c() {
+app_c::~app_c() {
     // Cleanup resources if any
 }
 
 /*** init method implementation ***/
-void hardware_c::init() {
+void app_c::init() {
     // Initialization code here
 }
 
-void hardware_c::update() {
+void app_c::update() {
     // Initialization code here
 }

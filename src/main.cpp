@@ -9,17 +9,19 @@
 
 #include <Arduino.h>
 #include "hardware.h"
+#include "app.h"
 
 
 hardware_c myHardware;
+app_c myApp;
 
 void setup() {
   myHardware.init();
-  appInit();
+  myApp.init();
 }
 
 void loop() {
-  hardwareUpdate()
-  appUpdate();
+  myHardware.update();
+  myApp.update();
 }
 
