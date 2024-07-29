@@ -58,20 +58,20 @@ void App::update() {
 
 /*** Private Functions definitions ***/
 int App::m_setLaunchReady() {
-
+    return 0;
 }
 int App::m_detectLaunch() {
-
+    return 0;
 }
 int App::detectBurnout() {
-
+    return 0;
 }
 int App::detectApogee() {
-
+    return 0;
 }
 int App::m_deployCharges() {
-
+    return 0;
 }
 int App::m_detectLanding() {
-    
+    return 0;    
 }

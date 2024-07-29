@@ -24,19 +24,19 @@ Sensors::~Sensors()
 
 /*** Public Functions definitions ***/
 int Sensors::init() {
-
+    return 0;
 }
 
 int Sensors::calib() {
-
+    return 0;
 }
 
 int Sensors::measure() {
-
+    return 0;
 }
 
 int Sensors::filter() {
-
+    return 0;
 }
 
 

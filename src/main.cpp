@@ -20,10 +20,15 @@ App myApp;
 void setup() {
   myHardware.init();
   myApp.init();
+
+  Serial.begin(9600);
 }
 
 /*** Loop ***/
 void loop() {
   myHardware.update();
   myApp.update();
+
+  Serial.println("SU Rocket Computer");
+  delay(1000);
 }

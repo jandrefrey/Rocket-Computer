@@ -24,22 +24,22 @@ Memory::~Memory()
 
 /*** Public Functions definitions ***/
 int Memory::init() {
-
+    return 0;
 }
 
 int Memory::writeFlash() {
-
+    return 0;
 }
 
 int Memory::writeSD() {
-
+    return 0;
 }
 
 int Memory::setFlash() {
-
+    return 0;
 }
 
 int Memory::setSD() {
-    
+    return 0;    
 }
 /*** Private Functions definitions ***/

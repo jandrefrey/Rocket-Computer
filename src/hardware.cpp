@@ -41,6 +41,7 @@ int Hardware::init()
     if (m_memory.init() != 0) {
         return 5;
     }
+    return 0;    
 }
 
 void Hardware::update()
@@ -58,17 +59,17 @@ void Hardware::update()
 /*** Private Functions definitions ***/
 
 int Hardware::m_pyroCheck() {
-
+    return 0;
 }
 
 int Hardware::m_batteryCheck() {
-
+    return 0;
 }
 
 int Hardware::m_buzzerUpdate() {
-
+    return 0;
 }
 
 int Hardware::m_pyroUpdate() {
-
+    return 0;
 }

@@ -22,18 +22,18 @@ Comms::~Comms() {
 
 /*** Public Functions definitions ***/
 int Comms::init() {
-
+    return 0;
 }
 
 int Comms::receive() {
-
+    return 0;
 }
 
 int Comms::send() {
-
+    return 0;
 }
 
 int Comms::setTx() {
-    
+    return 0;    
 }
 /*** Private Functions definitions ***/
