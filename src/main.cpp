@@ -13,8 +13,8 @@
 #include "app.h"
 
 /*** Declerations ***/
-hardware_c myHardware;
-app_c myApp;
+Hardware myHardware;
+App myApp;
 
 /*** Setup ***/
 void setup() {

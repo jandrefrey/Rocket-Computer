@@ -22,38 +22,56 @@ App::~App() {
 
 /*** Public Functions definitions ***/
 void App::init() {
-    calibrateSensors();
-    setLaunchReady();
+    m_sensors.calib();
+    m_setLaunchReady();
 }
 
 void App::update() {
-    filterMeasurements();
-    setrxTelemetry();
-    setTxTelemetry();
+    m_sensors.filter();
+    m_comms.setTx();
 
     if (m_flightStage == IDLE) {
 
-        detectLaunch();
+        m_detectLaunch();
     }
     if (m_flightStage == LAUNCH) {
-        setFlash();
+        m_mem.setFlash();
 
         detectBurnout();
     }
     if (m_flightStage == BURNOUT) {
-        setFlash();
+        m_mem.setFlash();
 
         detectApogee();
     }
     if (m_flightStage == APOGEE) {
-        deployCharges();
+        m_deployCharges();
+        m_mem.setFlash();
 
-        detectLanding();        
+        m_detectLanding();        
     }
     if (m_flightStage == LANDED) {
-        setSD();
+        m_mem.setSD();
 
     }
 }
 
 /*** Private Functions definitions ***/
+int App::m_setLaunchReady() {
+
+}
+int App::m_detectLaunch() {
+
+}
+int App::detectBurnout() {
+
+}
+int App::detectApogee() {
+
+}
+int App::m_deployCharges() {
+
+}
+int App::m_detectLanding() {
+    
+}

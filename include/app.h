@@ -13,6 +13,9 @@
 
 /*** Includes ***/
 #include <Arduino.h>
+#include "sensors.h"
+#include "comms.h"
+#include "memory.h"
 
 /*** Class declaration ***/
 class App {
@@ -24,6 +27,10 @@ public:
     void update();
 
 private:
+
+    Sensors m_sensors;
+    Comms m_comms;
+    Memory m_mem;
     typedef enum {
         IDLE,
         LAUNCH,
@@ -31,8 +38,14 @@ private:
         APOGEE,
         LANDED
     } flightStage_t;
-
     flightStage_t m_flightStage;
+
+    int m_setLaunchReady();
+    int m_detectLaunch();
+    int detectBurnout();
+    int detectApogee();
+    int m_deployCharges();
+    int m_detectLanding();
 };
 
 #endif

@@ -23,5 +23,23 @@ Memory::~Memory()
 }
 
 /*** Public Functions definitions ***/
+int Memory::init() {
 
+}
+
+int Memory::writeFlash() {
+
+}
+
+int Memory::writeSD() {
+
+}
+
+int Memory::setFlash() {
+
+}
+
+int Memory::setSD() {
+    
+}
 /*** Private Functions definitions ***/

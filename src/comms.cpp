@@ -21,5 +21,19 @@ Comms::~Comms() {
 }
 
 /*** Public Functions definitions ***/
+int Comms::init() {
 
+}
+
+int Comms::receive() {
+
+}
+
+int Comms::send() {
+
+}
+
+int Comms::setTx() {
+    
+}
 /*** Private Functions definitions ***/

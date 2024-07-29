@@ -23,6 +23,21 @@ Sensors::~Sensors()
 }
 
 /*** Public Functions definitions ***/
+int Sensors::init() {
+
+}
+
+int Sensors::calib() {
+
+}
+
+int Sensors::measure() {
+
+}
+
+int Sensors::filter() {
+
+}
 
 
 /*** Private Functions definitions ***/

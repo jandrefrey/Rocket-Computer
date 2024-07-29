@@ -21,6 +21,11 @@ public:
     Sensors();  // Constructor
     ~Sensors(); // Destructor
 
+    int init();
+    int calib();
+    int measure();
+    int filter();
+
 private:
 
 };

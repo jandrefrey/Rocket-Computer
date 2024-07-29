@@ -21,6 +21,12 @@ public:
     Memory();  // Constructor
     ~Memory(); // Destructor
 
+    int init();
+    int writeFlash();
+    int writeSD();
+    int setFlash();
+    int setSD();
+
 private:
 };
 

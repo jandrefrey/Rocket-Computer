@@ -22,6 +22,11 @@ public:
     Comms(); // Constructor
     ~Comms(); // Destructor
 
+    int init();
+    int receive();
+    int send();
+    int setTx();
+
 private:
 
 };
