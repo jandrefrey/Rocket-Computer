@@ -7,20 +7,19 @@
  *******************************************************************************
  */
 
-
 /*** Prevent Recursive Inclusion ***/
 #ifndef SENSORS_H
 #define SENSORS_H
-
 
 /*** Includes ***/
 #include <Arduino.h>
 
 /*** Class declaration ***/
-class sensors_c {
+class Sensors
+{
 public:
-    sensors_c(); // Constructor
-    ~sensors_c(); // Destructor
+    Sensors();  // Constructor
+    ~Sensors(); // Destructor
 
 private:
 

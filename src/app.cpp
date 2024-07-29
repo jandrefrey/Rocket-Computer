@@ -11,46 +11,46 @@
 #include "app.h"
 
 /*** Constructor implementation ***/
-app_c::app_c() {
+App::App() {
     // Initialize constructor logic here
 }
 
 /*** Destructor implementation ***/
-app_c::~app_c() {
+App::~App() {
     // Cleanup resources if any
 }
 
 /*** Public Functions definitions ***/
-void app_c::init() {
+void App::init() {
     calibrateSensors();
     setLaunchReady();
 }
 
-void app_c::update() {
+void App::update() {
     filterMeasurements();
     setrxTelemetry();
     setTxTelemetry();
 
-    if (flightStage == IDLE) {
+    if (m_flightStage == IDLE) {
 
         detectLaunch();
     }
-    if (flightStage == LAUNCH) {
+    if (m_flightStage == LAUNCH) {
         setFlash();
 
         detectBurnout();
     }
-    if (flightStage == BURNOUT) {
+    if (m_flightStage == BURNOUT) {
         setFlash();
 
         detectApogee();
     }
-    if (flightStage == APOGEE) {
+    if (m_flightStage == APOGEE) {
         deployCharges();
 
         detectLanding();        
     }
-    if (flightStage == LANDED) {
+    if (m_flightStage == LANDED) {
         setSD();
 
     }

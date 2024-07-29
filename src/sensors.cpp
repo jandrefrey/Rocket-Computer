@@ -1,7 +1,7 @@
 /**
  *******************************************************************************
  * \file        sensors.cpp
- * \brief       sensors library source file
+ * \brief       Sensors library source file
  * \date        2024/07/29
  * \author      Jandre Frey
  *******************************************************************************
@@ -11,15 +11,18 @@
 #include "sensors.h"
 
 /*** Constructor implementation ***/
-sensors_c::sensors_c() {
-    // Initialize deviceId or other constructor logic here
+Sensors::Sensors()
+{
+    // Initialize constructor logic here
 }
 
 /*** Destructor implementation ***/
-sensors_c::~sensors_c() {
+Sensors::~Sensors()
+{
     // Cleanup resources if any
 }
 
 /*** Public Functions definitions ***/
+
 
 /*** Private Functions definitions ***/

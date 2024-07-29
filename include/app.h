@@ -15,10 +15,10 @@
 #include <Arduino.h>
 
 /*** Class declaration ***/
-class app_c {
+class App {
 public:
-    app_c(); // Constructor
-    ~app_c(); // Destructor
+    App(); // Constructor
+    ~App(); // Destructor
 
     void init();
     void update();
@@ -32,7 +32,7 @@ private:
         LANDED
     } flightStage_t;
 
-    flightStage_t flightStage;
+    flightStage_t m_flightStage;
 };
 
 #endif

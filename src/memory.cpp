@@ -11,12 +11,14 @@
 #include "memory.h"
 
 /*** Constructor implementation ***/
-memory_c::memory_c() {
+Memory::Memory()
+{
     // Initialize deviceId or other constructor logic here
 }
 
 /*** Destructor implementation ***/
-memory_c::~memory_c() {
+Memory::~Memory()
+{
     // Cleanup resources if any
 }
 

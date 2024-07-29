@@ -11,25 +11,25 @@
 #include "hardware.h"
 
 /*** Constructor implementation ***/
-hardware_c::hardware_c() {
+Hardware::Hardware()
+{
     // Initialize deviceId or other constructor logic here
 }
 
 /*** Destructor implementation ***/
-hardware_c::~hardware_c() {
+Hardware::~Hardware()
+{
     // Cleanup resources if any
 }
 
 /*** Public Functions definitions ***/
-void hardware_c::init() {
-    sensorInit();
-    batteryInit();
-    pyroInit();
-    radioInit();
+void Hardware::init()
+{
+
 }
 
-void hardware_c::update() {
-    measureSensors();
+void Hardware::update()
+{
     
 }
 

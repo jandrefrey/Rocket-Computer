@@ -1,3 +1,8 @@
 {
-    "stm32-for-vscode.makePath": false
+    "stm32-for-vscode.makePath": false,
+    "C_Cpp.formatting": "default",
+    "C_Cpp.vcFormat.indent.accessSpecifiers": false,
+    "C_Cpp.vcFormat.indent.braces": false,
+    "C_Cpp.doxygen.generatedStyle": "/**",
+    "C_Cpp.doxygen.generateOnType": true
 }

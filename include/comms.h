@@ -17,10 +17,10 @@
 #include <Arduino.h>
 
 /*** Class declaration ***/
-class comms_c {
+class Comms {
 public:
-    comms_c(); // Constructor
-    ~comms_c(); // Destructor
+    Comms(); // Constructor
+    ~Comms(); // Destructor
 
 private:
 

@@ -7,23 +7,21 @@
  *******************************************************************************
  */
 
-
 /*** Prevent Recursive Inclusion ***/
 #ifndef MEMORY_H
 #define MEMORY_H
-
 
 /*** Includes ***/
 #include <Arduino.h>
 
 /*** Class declaration ***/
-class memory_c {
+class Memory
+{
 public:
-    memory_c(); // Constructor
-    ~memory_c(); // Destructor
+    Memory();  // Constructor
+    ~Memory(); // Destructor
 
 private:
-
 };
 
 #endif

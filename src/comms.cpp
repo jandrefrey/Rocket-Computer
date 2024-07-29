@@ -11,12 +11,12 @@
 #include "comms.h"
 
 /*** Constructor implementation ***/
-comms_c::comms_c() {
+Comms::Comms() {
     // Initialize deviceId or other constructor logic here
 }
 
 /*** Destructor implementation ***/
-comms_c::~comms_c() {
+Comms::~Comms() {
     // Cleanup resources if any
 }
 
