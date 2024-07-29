@@ -32,6 +32,8 @@ private:
     void batteryInit();
     void pyroInit();
     void radioInit();
+
+    void measureSensors();
 };
 
 #endif

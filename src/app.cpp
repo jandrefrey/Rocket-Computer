@@ -22,45 +22,38 @@ app_c::~app_c() {
 
 /*** Public Functions definitions ***/
 void app_c::init() {
-    app_c::calibrateSensors();
-    app_c::setLaunchReady();
+    calibrateSensors();
+    setLaunchReady();
 }
 
 void app_c::update() {
-    app_c::measureSensors();
-    app_c::filterMeasurements();
-    app_c::rxTelemetry();
-    app_c::txTelemetry();
+    filterMeasurements();
+    setrxTelemetry();
+    setTxTelemetry();
+
     if (flightStage == IDLE) {
 
-        app_c::detectLaunch();
+        detectLaunch();
     }
     if (flightStage == LAUNCH) {
-        app_c::storeFlash();
+        setFlash();
 
-        app_c::detectBurnout();
+        detectBurnout();
     }
     if (flightStage == BURNOUT) {
-        app_c::storeFlash();
+        setFlash();
 
-        app_c::detectApogee();
+        detectApogee();
     }
     if (flightStage == APOGEE) {
-        app_c::deployCharges();
+        deployCharges();
 
-        app_c::detectLanding();        
+        detectLanding();        
     }
     if (flightStage == LANDED) {
-        app_c::storeSD();
+        setSD();
 
     }
 }
 
 /*** Private Functions definitions ***/
-void calibrateSensors() {
-
-}
-
-void setLaunchReady() {
-
-}
