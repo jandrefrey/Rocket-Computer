@@ -41,3 +41,6 @@ int Sensors::filter() {
 
 
 /*** Private Functions definitions ***/
+
+
+Sensors m_sensors;

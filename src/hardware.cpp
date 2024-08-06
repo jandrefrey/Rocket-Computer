@@ -38,7 +38,7 @@ int Hardware::init()
     if (m_sensors.init() != 0) {
         return 4;
     }
-    if (m_memory.init() != 0) {
+    if (m_mem.init() != 0) {
         return 5;
     }
     return 0;    
@@ -48,10 +48,10 @@ void Hardware::update()
 {
     m_sensors.measure();
     m_batteryCheck();
-    m_comms.receive();
-    m_comms.send();
-    m_memory.writeFlash();
-    m_memory.writeSD();
+    m_comms.parseRx();
+    m_comms.sendMsg();
+    m_mem.writeFlash();
+    m_mem.writeSD();
     m_buzzerUpdate();
     m_pyroUpdate();
 }
@@ -73,3 +73,6 @@ int Hardware::m_buzzerUpdate() {
 int Hardware::m_pyroUpdate() {
     return 0;
 }
+
+
+Hardware myHardware;

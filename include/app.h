@@ -27,10 +27,6 @@ public:
     void update();
 
 private:
-
-    Sensors m_sensors;
-    Comms m_comms;
-    Memory m_mem;
     typedef enum {
         IDLE,
         LAUNCH,
@@ -47,5 +43,7 @@ private:
     int m_deployCharges();
     int m_detectLanding();
 };
+
+extern App myApp;
 
 #endif

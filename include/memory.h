@@ -30,4 +30,6 @@ public:
 private:
 };
 
+extern Memory m_mem;
+
 #endif

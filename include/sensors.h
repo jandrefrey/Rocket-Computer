@@ -30,4 +30,6 @@ private:
 
 };
 
+extern Sensors m_sensors;
+
 #endif

@@ -28,14 +28,13 @@ public:
     void update();
 
 private:
-    Comms m_comms;
-    Sensors m_sensors;
-    Memory m_memory;
 
     int m_pyroCheck();
     int m_batteryCheck();
     int m_buzzerUpdate();
     int m_pyroUpdate();
 };
+
+extern Hardware myHardware;
 
 #endif

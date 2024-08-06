@@ -27,8 +27,11 @@ void App::init() {
 }
 
 void App::update() {
+
     m_sensors.filter();
-    m_comms.setTx();
+
+    uint8_t value = millis();                                   //DEBUG
+    m_comms.setTelemetry(&value);
 
     if (m_flightStage == IDLE) {
 
@@ -75,3 +78,7 @@ int App::m_deployCharges() {
 int App::m_detectLanding() {
     return 0;    
 }
+
+
+
+App myApp;

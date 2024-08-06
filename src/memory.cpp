@@ -43,3 +43,7 @@ int Memory::setSD() {
     return 0;    
 }
 /*** Private Functions definitions ***/
+
+
+
+Memory m_mem;

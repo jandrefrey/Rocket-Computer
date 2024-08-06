@@ -13,8 +13,6 @@
 #include "app.h"
 
 /*** Declerations ***/
-Hardware myHardware;
-App myApp;
 
 /*** Setup ***/
 void setup() {
@@ -26,8 +24,9 @@ void setup() {
 
 /*** Loop ***/
 void loop() {
-  myHardware.update();
   myApp.update();
+  myHardware.update();
+  
 
   Serial.println("SU Rocket Computer");
   delay(1000);
