@@ -27,6 +27,8 @@ public:
     int init();
     void update();
 
+    Comms::message_s mymessage;
+
 private:
 
     int m_pyroCheck();

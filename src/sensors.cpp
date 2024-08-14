@@ -37,7 +37,7 @@ int Sensors::calib() {
 }
 
 int Sensors::measure() {
-    
+
     //Accel and Gyro
     sensors_event_t accel;
     sensors_event_t gyro;
@@ -49,7 +49,7 @@ int Sensors::measure() {
 
     //Baro
     if (bmp.performReading()) {
-        float pressure = bmp.pressure / 100.0;
+        float pressure = bmp.pressure / 100.0;      //measured in hPa
         float altitude = bmp.readAltitude(SEALEVELPRESSURE_HPA);
     }
 
@@ -67,6 +67,9 @@ int Sensors::measure() {
     scaledY /= 131072.0;
     scaledZ = (double)currentZ - 131072.0;
     scaledZ /= 131072.0;
+
+    //We can take a time measurement here, depending on how long all the measurements take to execute.
+    //Then we gotta pack this into a buffer? Or maybe just a public variable that some upper (app) layer can use.
 
     return 0;
 }

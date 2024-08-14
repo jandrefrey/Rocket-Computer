@@ -14,12 +14,14 @@
 Comms::Comms() {
     // Initialize deviceId or other constructor logic here
     txBuf = new uint8_t[2 + TELEMETRY_SIZE];
+    rxBuf = new uint8_t[2 + TELEMETRY_SIZE];
 }
 
 /*** Destructor implementation ***/
 Comms::~Comms() {
     // Cleanup resources if any
     delete[] txBuf;
+    delete[] rxBuf;
 }
 
 /*** Public Functions definitions ***/
@@ -44,7 +46,21 @@ int Comms::init() {
     return 0;
 }
 
-int Comms::parseRx() {
+int Comms::parseRx(message_s message) {
+    if((rxBuf[0] & 0b00001111) == RXID) {                                   //check rx
+        message.messagetype = (messagetype_t)rxBuf[1];                      //check message type
+        memcpy(rxBuf+2, message.pData, TELEMETRY_SIZE);                     //load data
+        for (int i = 0; i < (TELEMETRY_SIZE + 2); ++i) {                    //clear buf
+            rxBuf[i] = 0;
+        }
+        if(message.messagetype == COMMAND) {
+
+        }
+    } else {
+        for (int i = 0; i < (TELEMETRY_SIZE + 2); ++i) {
+            rxBuf[i] = 0;
+        }
+    }
     return 0;
 }
 
@@ -73,7 +89,7 @@ int Comms::sendMsg() {
         //LoRa.write(txBuf, txBuffHasData());
         //LoRa.endPacket();
 
-        for (int i = 0; i < (TELEMETRY_SIZE + 2); ++i) {                                //DEBUG
+        for (int i = 0; i < (TELEMETRY_SIZE + 2); ++i) {
             txBuf[i] = 0;
         }
         Serial.println("Data Sent");
@@ -94,18 +110,16 @@ bool Comms::txBuffHasData() {
 }
 
 void Comms::onReceive(int packetSize) {
-  String message = "";
+    int index = 0;
+    while (LoRa.available() && index < (2 + TELEMETRY_SIZE)) {
+        m_comms.rxBuf[index++] = LoRa.read();
+    }
 
-  while (LoRa.available()) {
-    message += (char)LoRa.read();
-  }
-
-  Serial.print("Node Receive: ");
-  Serial.println(message);
+  Serial.print("RxDone");
 }
 
 void Comms::onTxDone() {
-  Serial.println("TxDone");
+  Serial.println("");
   LoRa.receive();
 }
 

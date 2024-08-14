@@ -11,11 +11,14 @@
 #ifndef APP_H
 #define APP_H
 
+#define DEBUG
+
 /*** Includes ***/
 #include <Arduino.h>
 #include "sensors.h"
 #include "comms.h"
 #include "memory.h"
+#include "hardware.h"
 
 /*** Class declaration ***/
 class App {

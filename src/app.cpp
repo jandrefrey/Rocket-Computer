@@ -9,7 +9,6 @@
 
 /*** Includes ***/
 #include "app.h"
-
 /*** Constructor implementation ***/
 App::App() {
     // Initialize constructor logic here
@@ -27,6 +26,14 @@ void App::init() {
 }
 
 void App::update() {
+
+    #ifdef DEBUG
+        if (myHardware.mymessage.messagetype == Comms::COMMAND) {
+            if(myHardware.mymessage.pData[0] == 0b00010001) {               //CHECK DECREMENT POSITION... FIFO??
+                //firePyroCh1();
+            }
+        }
+    #endif
 
     m_sensors.filter();
 
