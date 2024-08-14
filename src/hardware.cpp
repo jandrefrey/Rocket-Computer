@@ -46,7 +46,7 @@ int Hardware::init()
 
 void Hardware::update()
 {
-    m_sensors.measure();
+    m_sensors.measure(mymeasurements);
     m_batteryCheck();
     m_comms.parseRx(mymessage);
     m_comms.sendMsg();

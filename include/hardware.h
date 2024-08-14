@@ -28,6 +28,7 @@ public:
     void update();
 
     Comms::message_s mymessage;
+    Sensors::measure_s mymeasurements;
 
 private:
 

@@ -37,12 +37,26 @@
 class Sensors
 {
 public:
+
+    struct measure_s {
+        float accelx;
+        float accely;
+        float accelz;
+        float gyrox;
+        float gyroy;
+        float gyroz;
+        float magx;
+        float magy;
+        float magz;
+        float alt;
+    };
+
     Sensors();  // Constructor
     ~Sensors(); // Destructor
 
     int init();
     int calib();
-    int measure();
+    int measure(measure_s measurement);
     int filter();
 
 private:

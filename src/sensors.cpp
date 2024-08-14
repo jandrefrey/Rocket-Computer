@@ -36,21 +36,25 @@ int Sensors::calib() {
     return 0;
 }
 
-int Sensors::measure() {
+int Sensors::measure(measure_s measurement) {
 
     //Accel and Gyro
     sensors_event_t accel;
     sensors_event_t gyro;
     sensors_event_t temp;
-    dso32.getEvent(&accel, &gyro, &temp);
-    float accelx = accel.acceleration.x;        //acceleration is measured in m/s^2
-    float gyrox = gyro.gyro.x;                 //rotation is measured in rad/s
+    dso32.getEvent(&accel, &gyro, &temp);               
+    measurement.accelx = accel.acceleration.x;  //acceleration is measured in m/s^2
+    measurement.accely = accel.acceleration.y;
+    measurement.accelz = accel.acceleration.z;
+    measurement.gyrox = gyro.gyro.x;            //rotation is measured in rad/s
+    measurement.gyroy = gyro.gyro.y;
+    measurement.gyroz = gyro.gyro.z;
     Serial.println("LSM32 Measured");
 
     //Baro
     if (bmp.performReading()) {
-        float pressure = bmp.pressure / 100.0;      //measured in hPa
-        float altitude = bmp.readAltitude(SEALEVELPRESSURE_HPA);
+        //float pressure = bmp.pressure / 100.0;      //measured in hPa
+        measurement.alt = bmp.readAltitude(SEALEVELPRESSURE_HPA);
     }
 
     //Magnetometer
@@ -63,13 +67,13 @@ int Sensors::measure() {
     myMag.getMeasurementXYZ(&currentX, &currentY, &currentZ);
     scaledX = (double)currentX - 131072.0;
     scaledX /= 131072.0;
+    measurement.magx = scaledX;
     scaledY = (double)currentY - 131072.0;
     scaledY /= 131072.0;
+    measurement.magy = scaledY;
     scaledZ = (double)currentZ - 131072.0;
     scaledZ /= 131072.0;
-
-    //We can take a time measurement here, depending on how long all the measurements take to execute.
-    //Then we gotta pack this into a buffer? Or maybe just a public variable that some upper (app) layer can use.
+    measurement.magz = scaledZ;
 
     return 0;
 }
@@ -114,6 +118,8 @@ int Sensors::mmc598Init() {
     }
 
     myMag.softReset();
+
+    return 0;
 }
 
 Sensors m_sensors;
