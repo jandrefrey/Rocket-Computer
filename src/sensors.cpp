@@ -24,7 +24,6 @@ Sensors::~Sensors()
 
 /*** Public Functions definitions ***/
 int Sensors::init() {
-    Serial.begin(9600);
     lsm32Init();
     bmp390Init();
     mmc598Init();
@@ -85,39 +84,44 @@ int Sensors::filter() {
 
 /*** Private Functions definitions ***/
 int Sensors::lsm32Init() {
-    if (!dso32.begin_SPI(LSM_CS, LSM_SCK, LSM_MISO, LSM_MOSI)) {
+    if (!dso32.begin_SPI(LSM_CS)) {
         Serial.println("LSM32 Error");
+    } else {
+        dso32.setAccelRange(LSM6DSO32_ACCEL_RANGE_32_G);
+        dso32.setGyroRange(LSM6DS_GYRO_RANGE_1000_DPS);
+
+        dso32.setAccelDataRate(LSM6DS_RATE_12_5_HZ);
+        dso32.setGyroDataRate(LSM6DS_RATE_12_5_HZ);
+
+        Serial.println("LSM6DSO32 init done");
     }
-
-    dso32.setAccelRange(LSM6DSO32_ACCEL_RANGE_32_G);
-    dso32.setGyroRange(LSM6DS_GYRO_RANGE_1000_DPS);
-
-    dso32.setAccelDataRate(LSM6DS_RATE_12_5_HZ);
-    dso32.setGyroDataRate(LSM6DS_RATE_12_5_HZ);
-
-    Serial.println("LSM6DSO32 init done");
-
     return 0;
 }
 
 int Sensors::bmp390Init() {
-    if (! bmp.begin_SPI(BMP_CS, BMP_SCK, BMP_MISO, BMP_MOSI)) {  // software SPI mode
+    if (! bmp.begin_SPI(BMP_CS)) {  // hardware SPI mode  
         Serial.println("BMP390 Error");
+    } else {
+        bmp.setTemperatureOversampling(BMP3_OVERSAMPLING_8X);
+        bmp.setPressureOversampling(BMP3_OVERSAMPLING_4X);
+        bmp.setIIRFilterCoeff(BMP3_IIR_FILTER_COEFF_3);
+        bmp.setOutputDataRate(BMP3_ODR_200_HZ);
+
+        Serial.println("BMP390 init done");
     }
 
-    // Set up oversampling and filter initialization
-    bmp.setTemperatureOversampling(BMP3_OVERSAMPLING_8X);
-    bmp.setPressureOversampling(BMP3_OVERSAMPLING_4X);
-    bmp.setIIRFilterCoeff(BMP3_IIR_FILTER_COEFF_3);
-    bmp.setOutputDataRate(BMP3_ODR_200_HZ);
+    return 0;
 }
 
 int Sensors::mmc598Init() {
     if( !myMag.begin(MMC_CS)) {
         Serial.println("MMC5983MA Error");
     }
+    else {
+        myMag.softReset();
 
-    myMag.softReset();
+        Serial.println("MMC598 init done");
+    }
 
     return 0;
 }

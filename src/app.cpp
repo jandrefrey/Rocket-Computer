@@ -21,11 +21,12 @@ App::~App() {
 
 /*** Public Functions definitions ***/
 void App::init() {
-    m_sensors.calib();
-    m_setLaunchReady();
+    //m_sensors.calib();
+    //m_setLaunchReady();
 }
 
 void App::update() {
+    /*
 
     #ifdef DEBUG
         if (myHardware.mymessage.messagetype == Comms::COMMAND) {
@@ -64,6 +65,7 @@ void App::update() {
         m_mem.setSD();
 
     }
+    */
 }
 
 /*** Private Functions definitions ***/

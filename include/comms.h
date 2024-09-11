@@ -17,6 +17,10 @@
 #include <Arduino.h>
 #include <LoRa.h>
 
+#define         CS_PIN          28
+#define         RESET_PIN       30
+#define         IRQ_PIN         29
+
 #define         LORA_FREQ       433E6
 #define         TXID            0b0001
 #define         RXID            0b0010
@@ -63,5 +67,6 @@ private:
 };
 
 extern Comms m_comms;
+
 
 #endif

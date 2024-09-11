@@ -19,7 +19,7 @@
 #include <SparkFun_MMC5983MA_Arduino_Library.h>
 
 
-#define LSM_CS 10
+#define LSM_CS 8
 #define LSM_SCK 13
 #define LSM_MISO 12
 #define LSM_MOSI 11
@@ -30,7 +30,7 @@
 #define BMP_CS 10
 #define SEALEVELPRESSURE_HPA (1013.25)
 
-#define MMC_CS 4
+#define MMC_CS 9
 //Other pins?
 
 /*** Class declaration ***/

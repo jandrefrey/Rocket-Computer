@@ -11,6 +11,10 @@
 #ifndef HARDWARE_H
 #define HARDWARE_H
 
+#define     BATTERY_MINIMUM     5.5
+//#define     USE_PYRO_1
+//#define     USE_PYRO_2
+
 /*** Includes ***/
 #include <Arduino.h>
 #include "sensors.h"

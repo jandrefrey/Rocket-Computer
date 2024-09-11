@@ -14,6 +14,9 @@
 Comms::Comms() {
     // Initialize deviceId or other constructor logic here
     txBuf = new uint8_t[2 + TELEMETRY_SIZE];
+    for (int i = 0; i < (TELEMETRY_SIZE + 2); ++i) {
+        txBuf[i] = 0;
+    }
     rxBuf = new uint8_t[2 + TELEMETRY_SIZE];
 }
 
@@ -26,22 +29,21 @@ Comms::~Comms() {
 
 /*** Public Functions definitions ***/
 int Comms::init() {
-    Serial.begin(9600);
 
-    const int csPin = 10;          // LoRa radio chip select
-    const int resetPin = 9;        // LoRa radio reset
-    const int irqPin = 2;          // change for your board; must be a hardware interrupt pin
-    LoRa.setPins(csPin, resetPin, irqPin);
+    LoRa.setPins(CS_PIN, RESET_PIN, IRQ_PIN);
 
     if (!LoRa.begin(LORA_FREQ)) {
-        Serial.println("LoRa init failed. Check your connections.");
+        Serial.println("LoRa init failed!");
         //while (true);                       // if failed, do nothing
     }
+
     Serial.println("LoRa init succeeded.");
 
     LoRa.onReceive(Comms::onReceive);
     LoRa.onTxDone(Comms::onTxDone);
     LoRa.receive();
+
+    
 
     return 0;
 }
@@ -74,9 +76,9 @@ int Comms::setTelemetry(uint8_t *pData) {
     // Copy the original data into the tx buffer after the 2 bytes
     memcpy(txBuf+2, pData, TELEMETRY_SIZE);
 
-    for (int i = 0; i < (TELEMETRY_SIZE+2); ++i) {                  //DEBUG
-        Serial.println(txBuf[i], BIN); 
-    }
+    // for (int i = 0; i < (TELEMETRY_SIZE+2); ++i) {                  //DEBUG
+    //     Serial.println(txBuf[i], BIN); 
+    // }
     Serial.println("Data logged"); 
 
     return 0;
@@ -84,10 +86,10 @@ int Comms::setTelemetry(uint8_t *pData) {
 
 int Comms::sendMsg() {
     if(txBuffHasData()) {
-        //LoRa.idle();
-        //LoRa.beginPacket();
-        //LoRa.write(txBuf, txBuffHasData());
-        //LoRa.endPacket();
+        LoRa.idle();
+        LoRa.beginPacket();
+        LoRa.write(txBuf, txBuffHasData());
+        LoRa.endPacket();
 
         for (int i = 0; i < (TELEMETRY_SIZE + 2); ++i) {
             txBuf[i] = 0;
@@ -101,7 +103,7 @@ int Comms::sendMsg() {
 bool Comms::txBuffHasData() {
     int dataCount = 0;
     for (int i = 0; i < (TELEMETRY_SIZE+2); ++i) {
-        Serial.println(txBuf[i], BIN);                                                   //DEBUG
+        //Serial.println(txBuf[i], BIN);                                                   //DEBUG
         if (txBuf[i] != 0) {
             ++dataCount;
         }

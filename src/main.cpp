@@ -16,10 +16,11 @@
 
 /*** Setup ***/
 void setup() {
+  Serial.begin(9600);
+  delay(1000);
+
   myHardware.init();
   myApp.init();
-
-  Serial.begin(9600);
 }
 
 /*** Loop ***/

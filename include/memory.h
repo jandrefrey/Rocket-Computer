@@ -11,8 +11,11 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 
+#define     SD_CS       36
+
 /*** Includes ***/
 #include <Arduino.h>
+#include <SD.h>
 
 /*** Class declaration ***/
 class Memory
@@ -28,6 +31,7 @@ public:
     int setSD();
 
 private:
+    File myFile;
 };
 
 extern Memory m_mem;
