@@ -69,14 +69,15 @@ void Hardware::update()
     
     m_comms.parseRx(mymessage);
     if(mymessage.message_available == 1) {
-        Serial.println("hardware received message");
+        //Serial.println("hardware received message");
         switch (mymessage.messagetype)
         {
         case (Comms::COMMAND):
-            Serial.println(mymessage.pData[0]);
-            Serial.println(mymessage.pData[1]);
+            //Serial.println(mymessage.pData[0]);
+            //Serial.println(mymessage.pData[1]);
             if(mymessage.pData[0] == FIRE_PYRO_C) {
-                tone(4, 1000);
+                Serial.println("Pyro fired!");
+                tone(4, 2000);
                 delay(400);
                 noTone(4);
                 #ifdef USE_PYRO_1

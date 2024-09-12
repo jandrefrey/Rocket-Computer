@@ -53,23 +53,23 @@ int Comms::init() {
 int Comms::parseRx(message_s& message) {
     if(*rxBuf) {
         if((rxBuf[0] & 0b00001111) == RXID) {                                           //check rx ID
-            Serial.println("Mine!");
+            //Serial.println("Mine!");
             message.messagetype = (messagetype_t)rxBuf[1];                              //check message type
-            Serial.print("messagetype: ");
-            Serial.println(message.messagetype, BIN);
+            //Serial.print("messagetype: ");
+            //Serial.println(message.messagetype, BIN);
             memcpy(message.pData, rxBuf+2, (size_t)TELEMETRY_SIZE);                     //load data
-            Serial.println("memcopy done");
-            for (int i = 0; i < TELEMETRY_SIZE; ++i) {
-                Serial.println(message.pData[i], BIN);
-            }
+            //Serial.println("memcopy done");
+            // for (int i = 0; i < TELEMETRY_SIZE; ++i) {
+            //     Serial.println(message.pData[i], BIN);
+            // }
             for (int i = 0; i < (TELEMETRY_SIZE + 2); ++i) {                            //clear buf
                 rxBuf[i] = 0;
             }
-            Serial.println("Buffer cleared");
+            //Serial.println("Buffer cleared");
             message.message_available = 1;
-            Serial.println(message.message_available);
+            //Serial.println(message.message_available);
         } else {
-            Serial.println("Not for me, clearing buffer");
+            Serial.println("Incorrect RxID, clearing buffer");
             for (int i = 0; i < (TELEMETRY_SIZE + 2); ++i) {
                 rxBuf[i] = 0;
             }
