@@ -31,6 +31,7 @@ Comms::~Comms() {
 int Comms::init() {
 
     LoRa.setPins(CS_PIN, RESET_PIN, IRQ_PIN);
+    LoRa.setSPI(SPI1);
 
     if (!LoRa.begin(LORA_FREQ)) {
         Serial.println("LoRa init failed!");
@@ -49,18 +50,29 @@ int Comms::init() {
 }
 
 int Comms::parseRx(message_s message) {
-    if((rxBuf[0] & 0b00001111) == RXID) {                                   //check rx
-        message.messagetype = (messagetype_t)rxBuf[1];                      //check message type
-        memcpy(rxBuf+2, message.pData, TELEMETRY_SIZE);                     //load data
-        for (int i = 0; i < (TELEMETRY_SIZE + 2); ++i) {                    //clear buf
-            rxBuf[i] = 0;
-        }
-        if(message.messagetype == COMMAND) {
-
-        }
-    } else {
-        for (int i = 0; i < (TELEMETRY_SIZE + 2); ++i) {
-            rxBuf[i] = 0;
+    if(*rxBuf) {
+        if((rxBuf[0] & 0b00001111) == RXID) {                                           //check rx
+            Serial.println("Mine!");
+            message.messagetype = (messagetype_t)rxBuf[1];                              //check message type
+            Serial.print("messagetype: ");
+            Serial.println(message.messagetype, BIN);
+            memcpy(message.pData, rxBuf+2, (size_t)TELEMETRY_SIZE);                     //load data
+            Serial.println("memcopy done");
+            for (int i = 0; i < TELEMETRY_SIZE; ++i) {
+                Serial.println(message.pData[i], BIN);
+            }
+            for (int i = 0; i < (TELEMETRY_SIZE + 2); ++i) {                            //clear buf
+                rxBuf[i] = 0;
+            }
+            Serial.println("Buffer cleared");
+            if(message.messagetype == COMMAND) {
+                Serial.println("Command Type identified");
+            }
+        } else {
+            Serial.println("Not for me, clearing buffer");
+            for (int i = 0; i < (TELEMETRY_SIZE + 2); ++i) {
+                rxBuf[i] = 0;
+            }
         }
     }
     return 0;
@@ -117,7 +129,7 @@ void Comms::onReceive(int packetSize) {
         m_comms.rxBuf[index++] = LoRa.read();
     }
 
-  Serial.print("RxDone");
+  Serial.println("Message Received!");
 }
 
 void Comms::onTxDone() {

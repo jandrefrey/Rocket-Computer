@@ -25,8 +25,8 @@
 #define         TXID            0b0001
 #define         RXID            0b0010
 //messagetype
+#define         COMMAND_PT      0b00000000
 #define         TELEMETRY_PT    0b00000001
-#define         COMMAND_PT      0b00000010
 //commands
 #define         FIRE_PYRO_C     0b00010001
 
@@ -44,7 +44,7 @@ public:
 
     struct message_s{
         messagetype_t messagetype;
-        uint8_t* pData;
+        uint8_t pData[TELEMETRY_SIZE];
     };
 
     Comms(); // Constructor

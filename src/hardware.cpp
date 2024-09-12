@@ -55,8 +55,8 @@ void Hardware::update()
 {
     //m_sensors.measure(mymeasurements);
     //m_batteryCheck();
-    //m_comms.parseRx(mymessage);
-    m_comms.sendMsg();
+    m_comms.parseRx(mymessage);
+    //m_comms.sendMsg();
     //m_mem.writeFlash();
     //m_mem.writeSD();
     //m_buzzerUpdate();

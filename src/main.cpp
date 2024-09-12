@@ -29,6 +29,6 @@ void loop() {
   myHardware.update();
   
 
-  Serial.println("SU Rocket Computer");
-  delay(1000);
+  //Serial.println("SU Rocket Computer");
+  //delay(1000);
 }
