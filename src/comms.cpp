@@ -14,10 +14,11 @@
 Comms::Comms() {
     // Initialize deviceId or other constructor logic here
     txBuf = new uint8_t[2 + TELEMETRY_SIZE];
+    rxBuf = new uint8_t[2 + TELEMETRY_SIZE];
     for (int i = 0; i < (TELEMETRY_SIZE + 2); ++i) {
         txBuf[i] = 0;
+        rxBuf[i] = 0;
     }
-    rxBuf = new uint8_t[2 + TELEMETRY_SIZE];
 }
 
 /*** Destructor implementation ***/
@@ -49,9 +50,9 @@ int Comms::init() {
     return 0;
 }
 
-int Comms::parseRx(message_s message) {
+int Comms::parseRx(message_s& message) {
     if(*rxBuf) {
-        if((rxBuf[0] & 0b00001111) == RXID) {                                           //check rx
+        if((rxBuf[0] & 0b00001111) == RXID) {                                           //check rx ID
             Serial.println("Mine!");
             message.messagetype = (messagetype_t)rxBuf[1];                              //check message type
             Serial.print("messagetype: ");
@@ -65,9 +66,8 @@ int Comms::parseRx(message_s message) {
                 rxBuf[i] = 0;
             }
             Serial.println("Buffer cleared");
-            if(message.messagetype == COMMAND) {
-                Serial.println("Command Type identified");
-            }
+            message.message_available = 1;
+            Serial.println(message.message_available);
         } else {
             Serial.println("Not for me, clearing buffer");
             for (int i = 0; i < (TELEMETRY_SIZE + 2); ++i) {

@@ -26,6 +26,17 @@ Hardware::~Hardware()
 /*** Public Functions definitions ***/
 int Hardware::init()
 {
+    pinMode(4, OUTPUT);
+    tone(4, 200);
+    delay(200);
+    tone(4, 400);
+    delay(200);
+    tone(4, 800);
+    delay(200);
+    tone(4, 1600);
+    delay(200);
+    noTone(4);     // Stop sound...
+
     SPI.begin();
 
     if(m_batteryCheck() != 0) {
@@ -55,7 +66,43 @@ void Hardware::update()
 {
     //m_sensors.measure(mymeasurements);
     //m_batteryCheck();
+    
     m_comms.parseRx(mymessage);
+    if(mymessage.message_available == 1) {
+        Serial.println("hardware received message");
+        switch (mymessage.messagetype)
+        {
+        case (Comms::COMMAND):
+            Serial.println(mymessage.pData[0]);
+            Serial.println(mymessage.pData[1]);
+            if(mymessage.pData[0] == FIRE_PYRO_C) {
+                tone(4, 1000);
+                delay(400);
+                noTone(4);
+                #ifdef USE_PYRO_1
+                pinMode(PYRO_PIN_1, OUTPUT);
+                digitalWrite(PYRO_PIN_1, HIGH);
+                delay(500);                 //Rather put this on a timer as not to delay the main loop.
+                digitalWrite(PYRO_PIN_1, LOW);
+                #endif
+                #ifdef USE_PYRO_2
+                pinMode(PYRO_PIN_2, OUTPUT);
+                digitalWrite(PYRO_PIN_2, HIGH);
+                delay(500);                 //Rather put this on a timer as not to delay the main loop.
+                digitalWrite(PYRO_PIN_2, LOW);
+                #endif
+            }
+            else {
+                Serial.println("Command not recognised");
+            }
+            break;
+        default:
+            Serial.println("Message type not recognised");
+            break;
+        }
+        mymessage.message_available = 0;
+    }
+    
     //m_comms.sendMsg();
     //m_mem.writeFlash();
     //m_mem.writeSD();

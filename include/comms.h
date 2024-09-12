@@ -45,13 +45,14 @@ public:
     struct message_s{
         messagetype_t messagetype;
         uint8_t pData[TELEMETRY_SIZE];
+        int message_available;
     };
 
     Comms(); // Constructor
     ~Comms(); // Destructor
 
     int init();
-    int parseRx(message_s message);
+    int parseRx(message_s& message);
     int setTelemetry(uint8_t *pData);
     int sendMsg();
 
