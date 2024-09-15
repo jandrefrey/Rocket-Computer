@@ -30,7 +30,7 @@
 //commands
 #define         FIRE_PYRO_C     0b00010001
 
-#define         TELEMETRY_SIZE  2
+#define         TELEMETRY_SIZE  29
 
 /*** Class declaration ***/
 class Comms {
@@ -53,8 +53,9 @@ public:
 
     int init();
     int parseRx(message_s& message);
-    int setTelemetry(uint8_t *pData);
+    int setTelemetry(float accel[], float gyro[], float magn[], float baro_raw, float baro_filt, uint32_t time, uint8_t pyroStates, float batVolts);
     int sendMsg();
+    uint8_t errorCode;
 
 private:
 

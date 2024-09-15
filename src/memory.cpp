@@ -31,6 +31,9 @@ int Memory::init() {
     } else {
         myFile = SD.open("DATA.txt", FILE_WRITE);
         if (myFile) {
+            Serial.print('\n');
+            Serial.print('\n');
+            Serial.print('\n');
             myFile.println("SU MODEL ROCKET DATA:");
             // close the file:
             myFile.close();

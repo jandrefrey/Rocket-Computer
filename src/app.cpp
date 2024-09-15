@@ -21,51 +21,45 @@ App::~App() {
 
 /*** Public Functions definitions ***/
 void App::init() {
-    //m_sensors.calib();
+    m_sensors.calib();
     //m_setLaunchReady();
+
+    prevTickTX = millis();
 }
 
 void App::update() {
-    /*
+    // m_sensors.integrateMeasures();
 
-    #ifdef DEBUG
-        if (myHardware.mymessage.messagetype == Comms::COMMAND) {
-            if(myHardware.mymessage.pData[0] == 0b00010001) {               //CHECK DECREMENT POSITION... FIFO??
-                //firePyroCh1();
-            }
-        }
-    #endif
-
-    m_sensors.filter();
-
-    uint8_t value = millis();                                   //DEBUG
-    m_comms.setTelemetry(&value);
-
-    if (m_flightStage == IDLE) {
-
-        m_detectLaunch();
+    if((millis() - prevTickTX) > TX_FREQ) {
+        m_comms.setTelemetry(m_sensors.mymeasurements.accel, m_sensors.mymeasurements.gyro, m_sensors.mymeasurements.mag,
+        m_sensors.mymeasurements.bpressure, m_sensors.filter(), m_sensors.mymeasurements.time, myHardware.m_pyroCheck(), myHardware.m_batteryCheck());
+        prevTickTX = millis();
     }
-    if (m_flightStage == LAUNCH) {
-        m_mem.setFlash();
+    // if (m_flightStage == IDLE) {
 
-        detectBurnout();
-    }
-    if (m_flightStage == BURNOUT) {
-        m_mem.setFlash();
+    //     m_detectLaunch();
+    // }
+    // if (m_flightStage == LAUNCH) {
+    //     m_mem.setFlash();
 
-        detectApogee();
-    }
-    if (m_flightStage == APOGEE) {
-        m_deployCharges();
-        m_mem.setFlash();
+    //     detectBurnout();
+    // }
+    // if (m_flightStage == BURNOUT) {
+    //     m_mem.setFlash();
 
-        m_detectLanding();        
-    }
-    if (m_flightStage == LANDED) {
-        m_mem.setSD();
+    //     detectApogee();
+    // }
+    // if (m_flightStage == APOGEE) {
+    //     m_deployCharges();
+    //     m_mem.setFlash();
 
-    }
-    */
+    //     m_detectLanding();        
+    // }
+    // if (m_flightStage == LANDED) {
+    //     m_mem.setSD();
+
+    // }
+    
 }
 
 /*** Private Functions definitions ***/

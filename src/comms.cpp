@@ -19,6 +19,8 @@ Comms::Comms() {
         txBuf[i] = 0;
         rxBuf[i] = 0;
     }
+
+    errorCode = 0;
 }
 
 /*** Destructor implementation ***/
@@ -78,20 +80,47 @@ int Comms::parseRx(message_s& message) {
     return 0;
 }
 
-int Comms::setTelemetry(uint8_t *pData) {
-    // Copy the 2 bytes of additional data into the beginning of the tx buffer
-    //txBuf[TELEMETRY_SIZE+1] = (RXID << 4 ) | TXID;
-    //txBuf[TELEMETRY_SIZE+0] = TELEMETRY_PT;
+int Comms::setTelemetry(float accel[], float gyro[], float magn[], float baro_raw, float baro_filt, uint32_t time, uint8_t pyroStates, float batVolts) {
     txBuf[0] = (RXID << 4 ) | TXID;
+
     txBuf[1] = TELEMETRY_PT;
 
-    // Copy the original data into the tx buffer after the 2 bytes
-    memcpy(txBuf+2, pData, TELEMETRY_SIZE);
+    txBuf[2] = ((int16_t)(accel[0]*100)>> 8) & 0xFF;
+    txBuf[3] = ((int16_t)(accel[0]*100)) & 0xFF;
+    txBuf[4] = ((int16_t)(accel[1]*100)>> 8) & 0xFF;
+    txBuf[5] = ((int16_t)(accel[1]*100)) & 0xFF;
+    txBuf[6] = ((int16_t)(accel[2]*100)>> 8) & 0xFF;
+    txBuf[7] = ((int16_t)(accel[2]*100)) & 0xFF;
 
-    // for (int i = 0; i < (TELEMETRY_SIZE+2); ++i) {                  //DEBUG
-    //     Serial.println(txBuf[i], BIN); 
-    // }
-    Serial.println("Data logged"); 
+    txBuf[8] = ((int16_t)(gyro[0]*100)>> 8) & 0xFF;
+    txBuf[9] = ((int16_t)(gyro[0]*100)) & 0xFF;
+    txBuf[10] = ((int16_t)(gyro[1]*100)>> 8) & 0xFF;
+    txBuf[11] = ((int16_t)(gyro[1]*100)) & 0xFF;
+    txBuf[12] = ((int16_t)(gyro[2]*100)>> 8) & 0xFF;
+    txBuf[13] = ((int16_t)(gyro[2]*100)) & 0xFF;
+
+    txBuf[14] = ((int16_t)(magn[0]*1000)>> 8) & 0xFF;
+    txBuf[15] = ((int16_t)(magn[0]*1000)) & 0xFF;
+    txBuf[16] = ((int16_t)(magn[1]*1000)>> 8) & 0xFF;
+    txBuf[17] = ((int16_t)(magn[1]*1000)) & 0xFF;
+    txBuf[18] = ((int16_t)(magn[2]*1000)>> 8) & 0xFF;
+    txBuf[19] = ((int16_t)(magn[2]*1000)) & 0xFF;
+
+    txBuf[20] = ((uint16_t)(baro_raw*10)>> 8) & 0xFF;
+    txBuf[21] = ((uint16_t)(baro_raw*10)) & 0xFF;
+    txBuf[22] = ((uint16_t)(baro_filt*10)>> 8) & 0xFF;
+    txBuf[23] = ((uint16_t)(baro_filt*10)) & 0xFF;
+
+    txBuf[24] = (time >> 24) & 0xFFF;
+    txBuf[25] = (time >> 16) & 0xFF;
+    txBuf[26] = (time >> 8) & 0xFF;
+    txBuf[27] = (time) & 0xFF;
+
+    txBuf[28] = pyroStates;
+
+    txBuf[29] = (uint8_t)(batVolts*10);
+
+    txBuf[30] = errorCode; //global variable.
 
     return 0;
 }
@@ -100,13 +129,12 @@ int Comms::sendMsg() {
     if(txBuffHasData()) {
         LoRa.idle();
         LoRa.beginPacket();
-        LoRa.write(txBuf, txBuffHasData());
-        LoRa.endPacket();
+        LoRa.write(txBuf, TELEMETRY_SIZE+2);
+        LoRa.endPacket(true);
 
         for (int i = 0; i < (TELEMETRY_SIZE + 2); ++i) {
             txBuf[i] = 0;
         }
-        Serial.println("Data Sent");
     }
     return 0;
 }
@@ -128,12 +156,16 @@ void Comms::onReceive(int packetSize) {
     while (LoRa.available() && index < (2 + TELEMETRY_SIZE)) {
         m_comms.rxBuf[index++] = LoRa.read();
     }
+    //TODO: TEST IF THIS WORKS. It might be nice to use packetSize to have better control of packet size!
+    // for (int i = 0; i < packetSize; i++) {
+    //     m_comms.rxBuf[index++] = LoRa.read();
+    // }
 
   Serial.println("Message Received!");
 }
 
 void Comms::onTxDone() {
-  Serial.println("");
+  Serial.println("Packet Sent Done");
   LoRa.receive();
 }
 

@@ -39,25 +39,37 @@ class Sensors
 public:
 
     struct measure_s {
-        float accelx;
-        float accely;
-        float accelz;
-        float gyrox;
-        float gyroy;
-        float gyroz;
-        float magx;
-        float magy;
-        float magz;
-        float alt;
+        float accel[3];
+        float gyro[3];
+        float mag[3];
+        float bpressure;
+        int32_t time; 
     };
+
+    struct telemetry_s {
+        int16_t position[3];    //xyz
+        int16_t velocity[3];
+        int16_t attitude[3];
+        int32_t time;           //millis
+        uint8_t pyroStates;
+        uint8_t batVoltage;
+        uint8_t errorCode;
+    };
+
+    measure_s mymeasurements;
+    telemetry_s myTelemetry;
 
     Sensors();  // Constructor
     ~Sensors(); // Destructor
 
     int init();
     int calib();
-    int measure(measure_s measurement);
-    int filter();
+    int measure();
+    float filter();
+    float bpresurre_filtered;
+    float bpresurre_filtered_prev;
+    // int integrateMeasures();
+
 
 private:
 
@@ -68,6 +80,14 @@ private:
     Adafruit_LSM6DSO32 dso32;
     Adafruit_BMP3XX bmp;
     SFE_MMC5983MA myMag;
+
+    // uint32_t _time_old;
+    // uint32_t _time_new;
+    // float _accel_new[3];
+    // float _accel_old[3];
+    // float _vel_old[3];
+    // float _gyro_old[3];
+
 };
 
 extern Sensors m_sensors;

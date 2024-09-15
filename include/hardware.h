@@ -34,12 +34,16 @@ public:
     void update();
 
     Comms::message_s mymessage;
-    Sensors::measure_s mymeasurements;
+    //Sensors::measure_s mymeasurements;
+
+    float m_batteryCheck();
+    uint8_t m_pyroCheck();
+
+    bool pyro1State;
+    bool pyro2State;
 
 private:
 
-    int m_pyroCheck();
-    int m_batteryCheck();
     int m_buzzerUpdate();
     int m_pyroUpdate();
 };

@@ -14,7 +14,8 @@
 /*** Constructor implementation ***/
 Hardware::Hardware()
 {
-
+    pyro1State = 0;
+    pyro2State = 0;
 }
 
 /*** Destructor implementation ***/
@@ -39,14 +40,26 @@ int Hardware::init()
 
     SPI.begin();
 
-    if(m_batteryCheck() != 0) {
+    Serial.print("Battery Voltage: ");
+    Serial.println(m_batteryCheck());
+    if(m_batteryCheck() < BATTERY_MINIMUM) {
         Serial.println("Battery voltage low. HALT!");
         while(1);
     }
-    if (m_pyroCheck() != 0) {
-        Serial.println("Pyro continuity failed. HALT!");
+
+    #ifdef USE_PYRO_1
+    if(m_pyroCheck() != 0b00001000 || m_pyroCheck() != 0b00001100) {
+        Serial.println("Pyro 1 Continuity Failed!");
         while(1);
     }
+    #endif
+    #ifdef USE_PYRO_2
+    if(m_pyroCheck() != 0b00000100 || m_pyroCheck() != 0b00001100) {
+        Serial.println("Pyro 2 Continuity Failed!");
+        while(1);
+    }
+    #endif
+
     if (m_comms.init() != 0) {  //no send and receive check here. This will be added in the state machine for ground idle.
         Serial.println("Radio init failed. HALT!");
         while(1);
@@ -64,7 +77,33 @@ int Hardware::init()
 
 void Hardware::update()
 {
-    //m_sensors.measure(mymeasurements);
+    //int time = millis();
+    m_sensors.measure();
+    //int measuredtime = millis() - time;
+    // Serial.print("Measuredtime:");
+    // Serial.println(measuredtime);    //Takes 9ms to measure
+    
+    // Serial.print("AccelX");
+    // Serial.println(mymeasurements.accelx);
+    // Serial.print("AccelY");
+    // Serial.println(mymeasurements.accely);
+    // Serial.print("AccelZ");
+    // Serial.println(mymeasurements.accelz);
+    // Serial.print("GyroX");
+    // Serial.println(mymeasurements.gyrox);
+    // Serial.print("GyroY");
+    // Serial.println(mymeasurements.gyroy);
+    // Serial.print("GyroZ");
+    // Serial.println(mymeasurements.gyroz);
+    // Serial.print("MagnX");
+    // Serial.println(mymeasurements.magx);
+    // Serial.print("MagnY");
+    // Serial.println(mymeasurements.magy);
+    // Serial.print("MagnZ");
+    // Serial.println(mymeasurements.magz);
+    // Serial.print("Baro");
+    // Serial.println(mymeasurements.bpressure);
+    // delay(500);
     //m_batteryCheck();
     
     m_comms.parseRx(mymessage);
@@ -80,7 +119,7 @@ void Hardware::update()
                 tone(4, 2000);
                 delay(400);
                 noTone(4);
-                #ifdef USE_PYRO_1
+                #ifdef USE_PYRO_1 //TODO MOVE THIS TO A SEPERATE FUNCTION. ONLY UPDATE THE GLOBAL VARIABLE HERE.
                 pinMode(PYRO_PIN_1, OUTPUT);
                 digitalWrite(PYRO_PIN_1, HIGH);
                 delay(500);                 //Rather put this on a timer as not to delay the main loop.
@@ -104,7 +143,7 @@ void Hardware::update()
         mymessage.message_available = 0;
     }
     
-    //m_comms.sendMsg();
+    m_comms.sendMsg();
     //m_mem.writeFlash();
     //m_mem.writeSD();
     //m_buzzerUpdate();
@@ -113,43 +152,32 @@ void Hardware::update()
 
 /*** Private Functions definitions ***/
 
-int Hardware::m_pyroCheck() {
-    #ifdef USE_PYRO_1
-    int sensorValue = analogRead(A6);
-    float voltage = sensorValue * (3.3 / 1023.0) * (150+47)/47;
+uint8_t Hardware::m_pyroCheck() {
+    uint8_t pyroStatus = 0b00000000;
 
+    float voltage = analogRead(A6) * (3.3 / 1023.0) * (150+47)/47;
     if(voltage > (BATTERY_MINIMUM-3)) {
-        Serial.println("Pyro 1 continuity TRUE");
-    } else {
-        return 1;
+        pyroStatus = pyroStatus | 0b00001000;
     }
-    #endif
 
-    #ifdef USE_PYRO_2
-    int sensorValue = analogRead(A8);
-    float voltage = sensorValue * (3.3 / 1023.0) * (150+47)/47;
-
+    voltage = analogRead(A8) * (3.3 / 1023.0) * (150+47)/47;
     if(voltage > (BATTERY_MINIMUM-3)) {
-        Serial.println("Pyro 2 continuity TRUE");
-    } else {
-        return 1;
+        pyroStatus = pyroStatus | 0b00000100;
     }
-    #endif
 
-    return 0;
+    if(pyro1State) {
+        pyroStatus = pyroStatus | 0b00000010;
+    }
+    if(pyro2State) {
+        pyroStatus = pyroStatus | 0b00000001;
+    }
+
+    return pyroStatus;
 }
 
-int Hardware::m_batteryCheck() {
-    int sensorValue = analogRead(A1);
-    float voltage = sensorValue * (3.3 / 1023.0) * (15000+5600)/5600;
-    Serial.print("Battery Voltage: ");
-    Serial.println(voltage);
-
-    if(voltage > BATTERY_MINIMUM) {
-        return 0;
-    } else {
-        return 1;
-    }
+float Hardware::m_batteryCheck() {
+    float voltage = analogRead(A1) * (3.3 / 1023.0) * (15000+5600)/5600;
+    return voltage;
 }
 
 int Hardware::m_buzzerUpdate() {

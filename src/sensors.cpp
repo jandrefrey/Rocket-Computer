@@ -32,28 +32,32 @@ int Sensors::init() {
 }
 
 int Sensors::calib() {
+    while (!bmp.performReading()) {
+        //do nothing
+    }
+    bpresurre_filtered_prev = bmp.pressure / 100.0;      //set the filtered pressure to the init pressure. Else it will be 0.
     return 0;
 }
 
-int Sensors::measure(measure_s measurement) {
+int Sensors::measure() {
 
     //Accel and Gyro
     sensors_event_t accel;
     sensors_event_t gyro;
     sensors_event_t temp;
     dso32.getEvent(&accel, &gyro, &temp);               
-    measurement.accelx = accel.acceleration.x;  //acceleration is measured in m/s^2
-    measurement.accely = accel.acceleration.y;
-    measurement.accelz = accel.acceleration.z;
-    measurement.gyrox = gyro.gyro.x;            //rotation is measured in rad/s
-    measurement.gyroy = gyro.gyro.y;
-    measurement.gyroz = gyro.gyro.z;
-    Serial.println("LSM32 Measured");
+    mymeasurements.accel[0] = accel.acceleration.x;  //acceleration is measured in m/s^2
+    mymeasurements.accel[1] = accel.acceleration.y;
+    mymeasurements.accel[2] = accel.acceleration.z;
+    mymeasurements.gyro[0] = gyro.gyro.x;            //rotation is measured in rad/s
+    mymeasurements.gyro[1] = gyro.gyro.y;
+    mymeasurements.gyro[2] = gyro.gyro.z;
+    //Serial.println("LSM32 Measured");
 
     //Baro
     if (bmp.performReading()) {
-        //float pressure = bmp.pressure / 100.0;      //measured in hPa
-        measurement.alt = bmp.readAltitude(SEALEVELPRESSURE_HPA);
+        mymeasurements.bpressure = bmp.pressure / 100.0;      //measured in hPa
+        //mymeasurements.alt = bmp.readAltitude(SEALEVELPRESSURE_HPA);
     }
 
     //Magnetometer
@@ -66,19 +70,25 @@ int Sensors::measure(measure_s measurement) {
     myMag.getMeasurementXYZ(&currentX, &currentY, &currentZ);
     scaledX = (double)currentX - 131072.0;
     scaledX /= 131072.0;
-    measurement.magx = scaledX;
+    mymeasurements.mag[0] = scaledX * 8; // The magnetometer full scale is +/- 8 Gauss. Multiply the scaled values by 8 to convert to Gauss
     scaledY = (double)currentY - 131072.0;
     scaledY /= 131072.0;
-    measurement.magy = scaledY;
+    mymeasurements.mag[1] = scaledY * 8;
     scaledZ = (double)currentZ - 131072.0;
     scaledZ /= 131072.0;
-    measurement.magz = scaledZ;
+    mymeasurements.mag[2] = scaledZ * 8;
+
+
+    //time
+    mymeasurements.time = millis();
 
     return 0;
 }
 
-int Sensors::filter() {
-    return 0;
+float Sensors::filter() {
+    bpresurre_filtered = bpresurre_filtered_prev + 1/32*(mymeasurements.bpressure-bpresurre_filtered_prev);
+    bpresurre_filtered_prev = bpresurre_filtered;
+    return bpresurre_filtered;
 }
 
 
@@ -125,5 +135,35 @@ int Sensors::mmc598Init() {
 
     return 0;
 }
+
+// int Sensors::integrateMeasures() {
+//     _time_new = mymeasurements.time;
+
+//     myTelemetry.attitude[0] = (_gyro_old[0] + mymeasurements.gyro[0])/2 * (_time_new - _time_old);  //have to remove gravity
+//     myTelemetry.attitude[1] = (_gyro_old[1] + mymeasurements.gyro[1])/2 * (_time_new - _time_old);
+//     myTelemetry.attitude[2] = (_gyro_old[2] + mymeasurements.gyro[2])/2 * (_time_new - _time_old);
+
+//     _gyro_old[0] = mymeasurements.gyro[0];
+//     _gyro_old[1] = mymeasurements.gyro[1];
+//     _gyro_old[2] = mymeasurements.gyro[2];
+
+//     myTelemetry.velocity[0] = (_accel_old[0] + mymeasurements.accel[0])/2 * (_time_new - _time_old);
+//     myTelemetry.velocity[1] = (_accel_old[1] + mymeasurements.accel[1])/2 * (_time_new - _time_old);
+//     myTelemetry.velocity[2] = (_accel_old[2] + mymeasurements.accel[2])/2 * (_time_new - _time_old);
+
+//     _accel_old[0] = mymeasurements.accel[0];
+//     _accel_old[1] = mymeasurements.accel[1];
+//     _accel_old[2] = mymeasurements.accel[2];
+
+//     myTelemetry.position[0] = (_vel_old[0] + myTelemetry.velocity[0])/2 * (_time_new - _time_old);
+//     myTelemetry.position[1] = (_vel_old[1] + myTelemetry.velocity[1])/2 * (_time_new - _time_old);
+//     myTelemetry.position[2] = (_vel_old[2] + myTelemetry.velocity[2])/2 * (_time_new - _time_old);    
+
+//     _vel_old[0] = myTelemetry.velocity[0];
+//     _vel_old[1] = myTelemetry.velocity[1];
+//     _vel_old[2] = myTelemetry.velocity[2];
+
+//     _time_old = mymeasurements.time;
+// }
 
 Sensors m_sensors;

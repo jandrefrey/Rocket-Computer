@@ -11,6 +11,7 @@
 #ifndef APP_H
 #define APP_H
 
+#define     TX_FREQ     1000
 #define DEBUG
 
 /*** Includes ***/
@@ -38,6 +39,8 @@ private:
         LANDED
     } flightStage_t;
     flightStage_t m_flightStage;
+
+    uint32_t prevTickTX;
 
     int m_setLaunchReady();
     int m_detectLaunch();
