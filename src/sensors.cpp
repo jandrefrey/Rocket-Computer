@@ -10,6 +10,8 @@
 /*** Includes ***/
 #include "sensors.h"
 
+IntervalTimer sensorTimer;
+
 /*** Constructor implementation ***/
 Sensors::Sensors()
 {
@@ -28,7 +30,10 @@ int Sensors::init() {
     bmp390Init();
     mmc598Init();
 
-    myTimer.begin(Sensors::getMeasures, SENSOR_READ_RATE);
+    sensorTimer.begin(Sensors::getMeasures, SENSOR_READ_RATE);      //This causes problems with the buzzer timer, 
+    //possibly since the interrupt function is so large. Not really sure if there is a solution here.
+
+    //sensorTimer.priority(255);
 
     return 0;
 }

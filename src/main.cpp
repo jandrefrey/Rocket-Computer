@@ -27,7 +27,4 @@ void setup() {
 void loop() {
   myHardware.update();
   myApp.update();  
-
-  //Serial.println("SU Rocket Computer");
-  //delay(1000);
 }

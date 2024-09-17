@@ -16,6 +16,7 @@
 #define     PYRO_PIN_2          23
 //#define     USE_PYRO_1
 //#define     USE_PYRO_2
+#define     PYRO_ON_TIME        500000
 
 /*** Includes ***/
 #include <Arduino.h>
@@ -39,13 +40,19 @@ public:
     float m_batteryCheck();
     uint8_t m_pyroCheck();
 
+    static void pyroExpire();
+
     bool pyro1State;
     bool pyro2State;
+
+    bool pyroDeploy;
 
 private:
 
     int m_buzzerUpdate();
     int m_pyroUpdate();
+
+    uint32_t pyroTime;
 };
 
 extern Hardware myHardware;

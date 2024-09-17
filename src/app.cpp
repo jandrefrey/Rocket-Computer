@@ -25,6 +25,7 @@ void App::init() {
     //m_setLaunchReady();
 
     prevTickTX = millis();
+    prevTickSD = millis();
 }
 
 void App::update() {
@@ -34,6 +35,14 @@ void App::update() {
         m_comms.setTelemetry(m_sensors.mymeasurements.accel, m_sensors.mymeasurements.gyro, m_sensors.mymeasurements.mag,
         m_sensors.mymeasurements.bpressure, m_sensors.filter(), m_sensors.mymeasurements.time, myHardware.m_pyroCheck(), myHardware.m_batteryCheck());
         prevTickTX = millis();
+
+        m_mem.logSD("Telemetry TX loaded");
+    }
+
+    if((millis() - prevTickSD) > LOG_FREQ) {
+        m_mem.logTelemetry(m_sensors.mymeasurements.accel, m_sensors.mymeasurements.gyro, m_sensors.mymeasurements.mag,
+        m_sensors.mymeasurements.bpressure, m_sensors.filter(), m_sensors.mymeasurements.time);
+        prevTickSD = millis();
     }
     // if (m_flightStage == IDLE) {
 

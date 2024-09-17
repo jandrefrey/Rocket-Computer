@@ -33,7 +33,10 @@
 #define SENSOR_READ_RATE 100000 //Microseconds
 
 #define MMC_CS 9
-//Other pins?
+
+//Global variables
+
+
 
 /*** Class declaration ***/
 class Sensors
@@ -60,7 +63,6 @@ public:
 
     measure_s mymeasurements;
     telemetry_s myTelemetry;
-    IntervalTimer myTimer;
 
     Sensors();  // Constructor
     ~Sensors(); // Destructor

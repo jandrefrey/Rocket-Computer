@@ -12,6 +12,7 @@
 #define APP_H
 
 #define     TX_FREQ     1000
+#define     LOG_FREQ    100
 #define DEBUG
 
 /*** Includes ***/
@@ -41,6 +42,7 @@ private:
     flightStage_t m_flightStage;
 
     uint32_t prevTickTX;
+    uint32_t prevTickSD;
 
     int m_setLaunchReady();
     int m_detectLaunch();

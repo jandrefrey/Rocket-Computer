@@ -26,12 +26,14 @@ public:
 
     int init();
     int writeFlash();
-    int writeSD();
+    int logTelemetry(float accel[], float gyro[], float magn[], float baro_raw, float baro_filt, uint32_t time);
     int setFlash();
-    int setSD();
+    int logSD(const char text[]);
+
+    File logFile;
 
 private:
-    File myFile;
+    File telemetryFile;
 };
 
 extern Memory m_mem;

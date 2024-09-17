@@ -10,12 +10,15 @@
 /*** Includes ***/
 #include "hardware.h"
 
+IntervalTimer pyroTimer;
+
 
 /*** Constructor implementation ***/
 Hardware::Hardware()
 {
     pyro1State = 0;
     pyro2State = 0;
+    pyroDeploy = 0;
 }
 
 /*** Destructor implementation ***/
@@ -37,6 +40,11 @@ int Hardware::init()
     tone(4, 1600);
     delay(200);
     noTone(4);     // Stop sound...
+
+    pinMode(PYRO_PIN_1, OUTPUT);
+    digitalWrite(PYRO_PIN_1, LOW);
+    pinMode(PYRO_PIN_2, OUTPUT);
+    digitalWrite(PYRO_PIN_2, LOW);
 
     SPI.begin();
 
@@ -78,7 +86,7 @@ int Hardware::init()
 void Hardware::update()
 {
     //int time = millis();
-    m_sensors.measure();
+    //m_sensors.measure();
     //int measuredtime = millis() - time;
     // Serial.print("Measuredtime:");
     // Serial.println(measuredtime);    //Takes 9ms to measure
@@ -116,21 +124,7 @@ void Hardware::update()
             //Serial.println(mymessage.pData[1]);
             if(mymessage.pData[0] == FIRE_PYRO_C) {
                 Serial.println("Pyro fired!");
-                tone(4, 2000);
-                delay(400);
-                noTone(4);
-                #ifdef USE_PYRO_1 //TODO MOVE THIS TO A SEPERATE FUNCTION. ONLY UPDATE THE GLOBAL VARIABLE HERE.
-                pinMode(PYRO_PIN_1, OUTPUT);
-                digitalWrite(PYRO_PIN_1, HIGH);
-                delay(500);                 //Rather put this on a timer as not to delay the main loop.
-                digitalWrite(PYRO_PIN_1, LOW);
-                #endif
-                #ifdef USE_PYRO_2
-                pinMode(PYRO_PIN_2, OUTPUT);
-                digitalWrite(PYRO_PIN_2, HIGH);
-                delay(500);                 //Rather put this on a timer as not to delay the main loop.
-                digitalWrite(PYRO_PIN_2, LOW);
-                #endif
+                pyroDeploy = 1;
             }
             else {
                 Serial.println("Command not recognised");
@@ -144,10 +138,9 @@ void Hardware::update()
     }
     
     m_comms.sendMsg();
-    //m_mem.writeFlash();
-    //m_mem.writeSD();
+
     //m_buzzerUpdate();
-    //m_pyroUpdate();
+    m_pyroUpdate();
 }
 
 /*** Private Functions definitions ***/
@@ -185,7 +178,29 @@ int Hardware::m_buzzerUpdate() {
 }
 
 int Hardware::m_pyroUpdate() {
+    if(pyroDeploy) {
+        pyroTimer.begin(Hardware::pyroExpire, PYRO_ON_TIME);
+        //pyroTime = millis();
+        m_mem.logSD("Pyro fired!");
+        tone(4, 2000, 500);
+        #ifdef USE_PYRO_1
+        digitalWrite(PYRO_PIN_1, HIGH);
+        #endif
+        #ifdef USE_PYRO_2
+        digitalWrite(PYRO_PIN_2, HIGH);
+        #endif
+        pyroDeploy = 0;
+    }
+    // if((millis() - pyroTime) > 500) {
+    // pyroExpire();
+    // }
     return 0;
+}
+
+void Hardware::pyroExpire() {
+    //noTone(4);
+    digitalWrite(PYRO_PIN_1, LOW);
+    digitalWrite(PYRO_PIN_2, LOW);
 }
 
 
