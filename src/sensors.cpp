@@ -28,7 +28,7 @@ int Sensors::init() {
     bmp390Init();
     mmc598Init();
 
-    Serial.println(myTimer.begin(Sensors::getMeasures, SENSOR_READ_RATE)); //NOT WORKING
+    myTimer.begin(Sensors::getMeasures, SENSOR_READ_RATE);
 
     return 0;
 }
@@ -42,15 +42,14 @@ int Sensors::calib() {
 }
 
 int Sensors::measure() {
-
     //Accel and Gyro
     sensors_event_t accel;
     sensors_event_t gyro;
     sensors_event_t temp;
 
-    if(dso32.accelerationAvailable() && dso32.gyroscopeAvailable()) {       //IT RAN FASTER WITHOUT, BUT I WANNA MAKE SURE WE COMPLETE THE MEASUREMENTS
+    if(dso32.accelerationAvailable() && dso32.gyroscopeAvailable()) {
         dso32.getEvent(&accel, &gyro, &temp);
-    } 
+    }
 
              
     mymeasurements.accel[0] = accel.acceleration.x;  //acceleration is measured in m/s^2
@@ -143,6 +142,7 @@ int Sensors::mmc598Init() {
     }
     else {
         myMag.softReset();
+        myMag.startMeasurement();
 
         Serial.println("MMC598 init done");
     }
@@ -181,7 +181,59 @@ int Sensors::mmc598Init() {
 // }
 
 void Sensors::getMeasures() {
-    
+
+    //uint32_t time = micros();
+
+    //Accel and Gyro
+    sensors_event_t accel;
+    sensors_event_t gyro;
+    sensors_event_t temp;
+
+    if(m_sensors.dso32.accelerationAvailable() && m_sensors.dso32.gyroscopeAvailable()) {
+        m_sensors.dso32.getEvent(&accel, &gyro, &temp);
+    }
+    m_sensors.mymeasurements.accel[0] = accel.acceleration.x;  //acceleration is measured in m/s^2
+    m_sensors.mymeasurements.accel[1] = accel.acceleration.y;
+    m_sensors.mymeasurements.accel[2] = accel.acceleration.z;
+    m_sensors.mymeasurements.gyro[0] = gyro.gyro.x;            //rotation is measured in rad/s
+    m_sensors.mymeasurements.gyro[1] = gyro.gyro.y;
+    m_sensors.mymeasurements.gyro[2] = gyro.gyro.z;
+
+    //Baro   
+    if (m_sensors.bmp.performReading()) {
+        m_sensors.mymeasurements.bpressure = m_sensors.bmp.pressure / 100.0;      //measured in hPa
+        //mymeasurements.alt = bmp.readAltitude(SEALEVELPRESSURE_HPA);
+    }
+
+    //Magnetometer
+    uint32_t currentX = 0;
+    uint32_t currentY = 0;
+    uint32_t currentZ = 0;
+    double scaledX = 0;
+    double scaledY = 0;
+    double scaledZ = 0;
+    if (m_sensors.myMag.isDataReady())
+    {
+        m_sensors.myMag.readFieldsXYZ(&currentX, &currentY, &currentZ);
+        m_sensors.myMag.startMeasurement();
+    }
+    scaledX = (double)currentX - 131072.0;
+    scaledX /= 131072.0;
+    m_sensors.mymeasurements.mag[0] = scaledX * 8; // The magnetometer full scale is +/- 8 Gauss. Multiply the scaled values by 8 to convert to Gauss
+    //Serial.println(m_sensors.mymeasurements.mag[0]);
+    scaledY = (double)currentY - 131072.0;
+    scaledY /= 131072.0;
+    m_sensors.mymeasurements.mag[1] = scaledY * 8;
+    //Serial.println(m_sensors.mymeasurements.mag[1]);
+    scaledZ = (double)currentZ - 131072.0;
+    scaledZ /= 131072.0;
+    m_sensors.mymeasurements.mag[2] = scaledZ * 8;
+    //Serial.println(m_sensors.mymeasurements.mag[2]);
+
+    //time
+    m_sensors.mymeasurements.time = millis();
+
+    //Serial.println(micros() - time);           //takes about 350us
 }
 
 Sensors m_sensors;
