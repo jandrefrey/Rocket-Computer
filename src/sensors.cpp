@@ -28,6 +28,8 @@ int Sensors::init() {
     bmp390Init();
     mmc598Init();
 
+    Serial.println(myTimer.begin(Sensors::getMeasures, SENSOR_READ_RATE)); //NOT WORKING
+
     return 0;
 }
 
@@ -45,16 +47,20 @@ int Sensors::measure() {
     sensors_event_t accel;
     sensors_event_t gyro;
     sensors_event_t temp;
-    dso32.getEvent(&accel, &gyro, &temp);               
+
+    if(dso32.accelerationAvailable() && dso32.gyroscopeAvailable()) {       //IT RAN FASTER WITHOUT, BUT I WANNA MAKE SURE WE COMPLETE THE MEASUREMENTS
+        dso32.getEvent(&accel, &gyro, &temp);
+    } 
+
+             
     mymeasurements.accel[0] = accel.acceleration.x;  //acceleration is measured in m/s^2
     mymeasurements.accel[1] = accel.acceleration.y;
     mymeasurements.accel[2] = accel.acceleration.z;
     mymeasurements.gyro[0] = gyro.gyro.x;            //rotation is measured in rad/s
     mymeasurements.gyro[1] = gyro.gyro.y;
     mymeasurements.gyro[2] = gyro.gyro.z;
-    //Serial.println("LSM32 Measured");
 
-    //Baro
+    //Baro   
     if (bmp.performReading()) {
         mymeasurements.bpressure = bmp.pressure / 100.0;      //measured in hPa
         //mymeasurements.alt = bmp.readAltitude(SEALEVELPRESSURE_HPA);
@@ -67,16 +73,24 @@ int Sensors::measure() {
     double scaledX = 0;
     double scaledY = 0;
     double scaledZ = 0;
-    myMag.getMeasurementXYZ(&currentX, &currentY, &currentZ);
+
+    //if (myMag.isDataReady())
+    //{
+        myMag.getMeasurementXYZ(&currentX, &currentY, &currentZ);
+    //}
+    
     scaledX = (double)currentX - 131072.0;
     scaledX /= 131072.0;
     mymeasurements.mag[0] = scaledX * 8; // The magnetometer full scale is +/- 8 Gauss. Multiply the scaled values by 8 to convert to Gauss
+    //Serial.println(mymeasurements.mag[0]);
     scaledY = (double)currentY - 131072.0;
     scaledY /= 131072.0;
     mymeasurements.mag[1] = scaledY * 8;
+    //Serial.println(mymeasurements.mag[1]);
     scaledZ = (double)currentZ - 131072.0;
     scaledZ /= 131072.0;
     mymeasurements.mag[2] = scaledZ * 8;
+    //Serial.println(mymeasurements.mag[2]);
 
 
     //time
@@ -165,5 +179,9 @@ int Sensors::mmc598Init() {
 
 //     _time_old = mymeasurements.time;
 // }
+
+void Sensors::getMeasures() {
+    
+}
 
 Sensors m_sensors;

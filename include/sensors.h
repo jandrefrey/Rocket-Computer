@@ -30,6 +30,8 @@
 #define BMP_CS 10
 #define SEALEVELPRESSURE_HPA (1013.25)
 
+#define SENSOR_READ_RATE 10000 //Microseconds
+
 #define MMC_CS 9
 //Other pins?
 
@@ -58,6 +60,7 @@ public:
 
     measure_s mymeasurements;
     telemetry_s myTelemetry;
+    IntervalTimer myTimer;
 
     Sensors();  // Constructor
     ~Sensors(); // Destructor
@@ -69,6 +72,7 @@ public:
     float bpresurre_filtered;
     float bpresurre_filtered_prev;
     // int integrateMeasures();
+    static void getMeasures();
 
 
 private:
