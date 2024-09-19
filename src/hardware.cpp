@@ -224,9 +224,11 @@ int Hardware::m_pyroUpdate() {
         m_mem.logSD("Pyro fired!");
         #ifdef USE_PYRO_1
         digitalWrite(PYRO_PIN_1, HIGH);
+        pyro1State = 1;
         #endif
         #ifdef USE_PYRO_2
         digitalWrite(PYRO_PIN_2, HIGH);
+        pyro2State = 1;
         #endif
         pyroDeploy = 0;
     }
