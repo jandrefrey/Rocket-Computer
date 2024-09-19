@@ -9,6 +9,7 @@
 
 /*** Includes ***/
 #include "hardware.h"
+#include "app.h"
 
 IntervalTimer pyroTimer;
 
@@ -123,8 +124,10 @@ void Hardware::update()
             //Serial.println(mymessage.pData[0]);
             //Serial.println(mymessage.pData[1]);
             if(mymessage.pData[0] == FIRE_PYRO_C) {
-                Serial.println("Pyro fired!");
+                myApp.m_flightStage = App::APOGEE;      //DONT LIKE THIS IMPLEMENTATION
                 pyroDeploy = 1;
+                myHardware.buzzerMode = Hardware::QUICK_BEEPS;
+                myApp.timeDebug = millis();
             }
             else {
                 Serial.println("Command not recognised");

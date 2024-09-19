@@ -31,7 +31,6 @@ public:
     void init();
     void update();
 
-private:
     typedef enum {
         IDLE,
         LAUNCH,
@@ -41,6 +40,10 @@ private:
     } flightStage_t;
     flightStage_t m_flightStage;
 
+    uint32_t timeDebug;
+
+private:
+
     uint32_t prevTickTX;
     uint32_t prevTickSD;
 
@@ -48,8 +51,6 @@ private:
     float pressurePrev;
     bool apogeeDone;
     uint32_t apogeeCounter;
-
-    uint32_t timeDebug;
 
     int m_setLaunchReady();
     int m_detectLaunch();
