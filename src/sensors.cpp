@@ -30,7 +30,7 @@ int Sensors::init() {
     bmp390Init();
     mmc598Init();
 
-    sensorTimer.begin(Sensors::getMeasures, SENSOR_READ_RATE);      //This causes problems with the buzzer timer, 
+    //sensorTimer.begin(Sensors::getMeasures, SENSOR_READ_RATE);      //This causes problems with the buzzer timer, 
     //possibly since the interrupt function is so large. Not really sure if there is a solution here.
 
     //sensorTimer.priority(255);
@@ -42,21 +42,18 @@ int Sensors::calib() {
     while (!bmp.performReading()) {
         //do nothing
     }
-    bpresurre_filtered_prev = bmp.pressure / 100.0;      //set the filtered pressure to the init pressure. Else it will be 0.
+    mymeasurements.bpresurre_filtered_prev = bmp.pressure / 100.0;      //set the filtered pressure to the init pressure. Else it will be 0.
     return 0;
 }
 
 int Sensors::measure() {
-    //Accel and Gyro
-    sensors_event_t accel;
-    sensors_event_t gyro;
-    sensors_event_t temp;
 
+    //uint32_t time = micros();
+
+    //Accel and Gyro
     if(dso32.accelerationAvailable() && dso32.gyroscopeAvailable()) {
         dso32.getEvent(&accel, &gyro, &temp);
     }
-
-             
     mymeasurements.accel[0] = accel.acceleration.x;  //acceleration is measured in m/s^2
     mymeasurements.accel[1] = accel.acceleration.y;
     mymeasurements.accel[2] = accel.acceleration.z;
@@ -67,46 +64,46 @@ int Sensors::measure() {
     //Baro   
     if (bmp.performReading()) {
         mymeasurements.bpressure = bmp.pressure / 100.0;      //measured in hPa
+        //Serial.println(mymeasurements.bpressure);
         //mymeasurements.alt = bmp.readAltitude(SEALEVELPRESSURE_HPA);
     }
+    filter();
 
     //Magnetometer
-    uint32_t currentX = 0;
-    uint32_t currentY = 0;
-    uint32_t currentZ = 0;
-    double scaledX = 0;
-    double scaledY = 0;
-    double scaledZ = 0;
-
-    //if (myMag.isDataReady())
-    //{
-        myMag.getMeasurementXYZ(&currentX, &currentY, &currentZ);
-    //}
-    
+    if (myMag.isDataReady())
+    {
+        currentX = 0;
+        currentY = 0;
+        currentZ = 0;
+        scaledX = 0;
+        scaledY = 0;
+        scaledZ = 0;
+        myMag.readFieldsXYZ(&currentX, &currentY, &currentZ);
+        myMag.startMeasurement();
+    }
     scaledX = (double)currentX - 131072.0;
     scaledX /= 131072.0;
-    mymeasurements.mag[0] = scaledX * 8; // The magnetometer full scale is +/- 8 Gauss. Multiply the scaled values by 8 to convert to Gauss
-    //Serial.println(mymeasurements.mag[0]);
+    mymeasurements.mag[0] = (float)scaledX * 8; // The magnetometer full scale is +/- 8 Gauss. Multiply the scaled values by 8 to convert to Gauss
+    //Serial.println(m_sensors.mymeasurements.mag[0]);
     scaledY = (double)currentY - 131072.0;
     scaledY /= 131072.0;
-    mymeasurements.mag[1] = scaledY * 8;
-    //Serial.println(mymeasurements.mag[1]);
+    mymeasurements.mag[1] = (float)scaledY * 8;
+    //Serial.println(m_sensors.mymeasurements.mag[1]);
     scaledZ = (double)currentZ - 131072.0;
     scaledZ /= 131072.0;
-    mymeasurements.mag[2] = scaledZ * 8;
-    //Serial.println(mymeasurements.mag[2]);
-
+    mymeasurements.mag[2] = (float)scaledZ * 8;
 
     //time
     mymeasurements.time = millis();
 
+    //Serial.println(micros() - time);           //takes about 350us
     return 0;
 }
 
-float Sensors::filter() {
-    bpresurre_filtered = bpresurre_filtered_prev + 1/32*(mymeasurements.bpressure-bpresurre_filtered_prev);
-    bpresurre_filtered_prev = bpresurre_filtered;
-    return bpresurre_filtered;
+void Sensors::filter() {
+    // mymeasurements.bpresurre_filtered = mymeasurements.bpresurre_filtered_prev + ((mymeasurements.bpressure-mymeasurements.bpresurre_filtered_prev)/32);
+    mymeasurements.bpresurre_filtered = mymeasurements.bpresurre_filtered_prev + ((mymeasurements.bpressure-mymeasurements.bpresurre_filtered_prev)/128);
+    mymeasurements.bpresurre_filtered_prev = mymeasurements.bpresurre_filtered;
 }
 
 
@@ -118,8 +115,8 @@ int Sensors::lsm32Init() {
         dso32.setAccelRange(LSM6DSO32_ACCEL_RANGE_32_G);
         dso32.setGyroRange(LSM6DS_GYRO_RANGE_1000_DPS);
 
-        dso32.setAccelDataRate(LSM6DS_RATE_12_5_HZ);
-        dso32.setGyroDataRate(LSM6DS_RATE_12_5_HZ);
+        dso32.setAccelDataRate(LSM6DS_RATE_416_HZ);
+        dso32.setGyroDataRate(LSM6DS_RATE_416_HZ);
 
         Serial.println("LSM6DSO32 init done");
     }
@@ -132,8 +129,10 @@ int Sensors::bmp390Init() {
     } else {
         bmp.setTemperatureOversampling(BMP3_OVERSAMPLING_8X);
         bmp.setPressureOversampling(BMP3_OVERSAMPLING_4X);
-        bmp.setIIRFilterCoeff(BMP3_IIR_FILTER_COEFF_3);
+        bmp.setIIRFilterCoeff(BMP3_IIR_FILTER_COEFF_15);
         bmp.setOutputDataRate(BMP3_ODR_200_HZ);
+
+        bmp.setSensorSettings();
 
         Serial.println("BMP390 init done");
     }

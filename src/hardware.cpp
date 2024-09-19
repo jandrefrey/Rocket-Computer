@@ -86,7 +86,7 @@ int Hardware::init()
 void Hardware::update()
 {
     //int time = millis();
-    //m_sensors.measure();
+    m_sensors.measure();
     //int measuredtime = millis() - time;
     // Serial.print("Measuredtime:");
     // Serial.println(measuredtime);    //Takes 9ms to measure
@@ -139,7 +139,7 @@ void Hardware::update()
     
     m_comms.sendMsg();
 
-    //m_buzzerUpdate();
+    m_buzzerUpdate();
     m_pyroUpdate();
 }
 
@@ -174,15 +174,51 @@ float Hardware::m_batteryCheck() {
 }
 
 int Hardware::m_buzzerUpdate() {
+    switch (buzzerMode)
+    {
+    case IDLE:
+        //noTone(4);
+        break;
+    case SLOW_PULSE:
+        if((millis() - slowPulseTime) > 1000) {
+            tone(4, 1000, 500);
+            slowPulseTime = millis();
+        }
+        break;
+    case QUICK_BEEPS:
+        if((millis() - quickBeepsTime) > 200) {
+            tone(4, 2000, 100);
+            quickBeepsTime = millis();
+            quickBeepscounter++;
+        }
+        if((quickBeepscounter) > 2) {
+            buzzerMode = IDLE;
+            quickBeepscounter = 0;
+        }
+        break; 
+    case SWEEPING_PULSE:
+        if((millis() - sweepingPulseTime) > 3000) {
+            sweepingPulseCounter++;
+            tone(4, sweepingPulseCounter);
+        }
+        if(sweepingPulseCounter > 2500) {
+            noTone(4);
+            sweepingPulseCounter = 500;
+            sweepingPulseTime = millis();
+        }
+        break;    
+    default:
+    buzzerMode = IDLE;
+        break;
+    }
+
     return 0;
 }
 
 int Hardware::m_pyroUpdate() {
     if(pyroDeploy) {
         pyroTimer.begin(Hardware::pyroExpire, PYRO_ON_TIME);
-        //pyroTime = millis();
         m_mem.logSD("Pyro fired!");
-        tone(4, 2000, 500);
         #ifdef USE_PYRO_1
         digitalWrite(PYRO_PIN_1, HIGH);
         #endif
@@ -198,7 +234,6 @@ int Hardware::m_pyroUpdate() {
 }
 
 void Hardware::pyroExpire() {
-    //noTone(4);
     digitalWrite(PYRO_PIN_1, LOW);
     digitalWrite(PYRO_PIN_2, LOW);
 }

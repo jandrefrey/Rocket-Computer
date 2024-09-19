@@ -6,6 +6,8 @@
     "C_Cpp.doxygen.generatedStyle": "/**",
     "C_Cpp.doxygen.generateOnType": true,
     "files.associations": {
-        "atomic": "cpp"
+        "atomic": "cpp",
+        "cmath": "cpp",
+        "algorithm": "cpp"
     }
 }

@@ -48,6 +48,8 @@ public:
         float gyro[3];
         float mag[3];
         float bpressure;
+        float bpresurre_filtered;
+        float bpresurre_filtered_prev;
         int32_t time; 
     };
 
@@ -70,9 +72,7 @@ public:
     int init();
     int calib();
     int measure();
-    float filter();
-    float bpresurre_filtered;
-    float bpresurre_filtered_prev;
+    void filter();
     // int integrateMeasures();
     static void getMeasures();
 
@@ -86,6 +86,17 @@ private:
     Adafruit_LSM6DSO32 dso32;
     Adafruit_BMP3XX bmp;
     SFE_MMC5983MA myMag;
+
+    sensors_event_t accel;
+    sensors_event_t gyro;
+    sensors_event_t temp;
+
+    uint32_t currentX;
+    uint32_t currentY;
+    uint32_t currentZ;
+    double scaledX;
+    double scaledY;
+    double scaledZ;
 
     // uint32_t _time_old;
     // uint32_t _time_new;

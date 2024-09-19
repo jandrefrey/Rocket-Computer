@@ -12,8 +12,8 @@
 #define APP_H
 
 #define     TX_FREQ     1000
-#define     LOG_FREQ    100
-#define DEBUG
+#define     LOG_FREQ    1
+#define     DEBUG
 
 /*** Includes ***/
 #include <Arduino.h>
@@ -44,10 +44,17 @@ private:
     uint32_t prevTickTX;
     uint32_t prevTickSD;
 
+    float pressurePrevPrev;
+    float pressurePrev;
+    bool apogeeDone;
+    uint32_t apogeeCounter;
+
+    uint32_t timeDebug;
+
     int m_setLaunchReady();
     int m_detectLaunch();
     int detectBurnout();
-    int detectApogee();
+    int detectApogee(float pressure);
     int m_deployCharges();
     int m_detectLanding();
 };

@@ -37,6 +37,14 @@ public:
     Comms::message_s mymessage;
     //Sensors::measure_s mymeasurements;
 
+    typedef enum {
+        IDLE = 0,
+        SLOW_PULSE,
+        QUICK_BEEPS,
+        SWEEPING_PULSE
+    } buzzerMode_t;
+    buzzerMode_t buzzerMode;
+
     float m_batteryCheck();
     uint8_t m_pyroCheck();
 
@@ -53,6 +61,12 @@ private:
     int m_pyroUpdate();
 
     uint32_t pyroTime;
+
+    uint32_t slowPulseTime;
+    uint32_t quickBeepsTime;
+    uint32_t quickBeepscounter;
+    uint32_t sweepingPulseCounter;
+    uint32_t sweepingPulseTime;
 };
 
 extern Hardware myHardware;
