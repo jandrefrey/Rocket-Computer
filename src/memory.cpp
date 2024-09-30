@@ -23,7 +23,7 @@ Memory::~Memory()
 }
 
 /*** Public Functions definitions ***/
-int Memory::init() {
+int Memory::sdInit() {
     //SD INIT
     if (!SD.sdfs.begin(SdSpiConfig(SD_CS, SHARED_SPI, SD_SCK_MHZ(16), &SPI2))) {
         Serial.println("SD initialization failed!");
@@ -52,11 +52,9 @@ int Memory::init() {
         Serial.println("SD init done");
         return 0;
     }
+}
 
-    //FLASH INIT
-
-
-
+int Memory::flashInit() {
     return 0;
 }
 

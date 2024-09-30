@@ -36,6 +36,7 @@ public:
         LAUNCH,
         BURNOUT,
         APOGEE,
+        DESCENT,
         LANDED
     } flightStage_t;
     flightStage_t m_flightStage;
@@ -49,7 +50,6 @@ private:
 
     float pressurePrevPrev;
     float pressurePrev;
-    bool apogeeDone;
     uint32_t apogeeCounter;
 
     int m_setLaunchReady();

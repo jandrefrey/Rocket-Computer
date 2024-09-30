@@ -26,8 +26,6 @@ void App::init() {
 
     prevTickTX = millis();
     prevTickSD = millis();
-
-    apogeeDone = 0;
 }
 
 void App::update() {
@@ -44,8 +42,6 @@ void App::update() {
         m_comms.setTelemetry(m_sensors.mymeasurements.accel, m_sensors.mymeasurements.gyro, m_sensors.mymeasurements.mag,
         m_sensors.mymeasurements.bpressure, m_sensors.mymeasurements.bpresurre_filtered, m_sensors.mymeasurements.time, myHardware.m_pyroCheck(), myHardware.m_batteryCheck());
         prevTickTX = millis();
-
-        m_mem.logSD("Telemetry TX loaded");
     }
 
     #ifndef DEBUG
@@ -68,11 +64,11 @@ void App::update() {
         }
     }
     if (m_flightStage == APOGEE) {
-        // if(!apogeeDone) {
-        //     myHardware.pyroDeploy = 1;
-        //     apogeeDone = 1;
-        // }
-
+        myHardware.pyroDeploy = 1;
+        myHardware.buzzerMode = Hardware::QUICK_BEEPS;
+        m_flightStage = DESCENT;
+    }
+    if (m_flightStage == DESCENT) {
         //Update State
         if(m_detectLanding()) {
             m_flightStage = LANDED;
@@ -99,13 +95,15 @@ void App::update() {
         //Update State
         if((millis() - timeDebug) > 5000) {
             m_flightStage = APOGEE;
-            myHardware.pyroDeploy = 1;
-            myHardware.buzzerMode = Hardware::QUICK_BEEPS;
-            timeDebug = millis();
         }
     }
     if (m_flightStage == APOGEE) {
-
+        myHardware.pyroDeploy = 1;
+        myHardware.buzzerMode = Hardware::QUICK_BEEPS;
+        timeDebug = millis();
+        m_flightStage = DESCENT;
+    }
+    if (m_flightStage == DESCENT) {
         //Update State
         if((millis() - timeDebug) > 5000) {
             m_flightStage = LANDED;
@@ -121,23 +119,23 @@ void App::update() {
 int App::m_setLaunchReady() {
     return 0;
 }
-int App::m_detectLaunch() {
 
+int App::m_detectLaunch() {
     float accelVector = sqrt((sq(m_sensors.mymeasurements.accel[0]) + sq(m_sensors.mymeasurements.accel[1]) + sq(m_sensors.mymeasurements.accel[2])));
-    if(accelVector > 20) {
-        return 1;
-    }
-    if(m_sensors.mymeasurements.accel[1] > 20) {
+    if((accelVector > 20) || (m_sensors.mymeasurements.accel[1] > 20)) {
+        m_mem.logSD("Launch Detected");
         return 1;
     }
     return 0;
 }
+
 int App::detectBurnout() {
     return 0;
 }
-int App::detectApogee(float pressure) {
 
-    if(((pressure - pressurePrev) > 0.4) && (pressurePrev != 0) && (!apogeeDone)) {
+int App::detectApogee(float pressure) {
+    if(((pressure - pressurePrev) > 0.4) && (pressurePrev != 0)) {
+        m_mem.logSD("Apogee Detected");
         return 1;
     }
 
@@ -148,17 +146,22 @@ int App::detectApogee(float pressure) {
     apogeeCounter++;
     
     return 0;
+    //WE COULD ALSO TRY USING THE DERIVATIVE TO TEST FOR APOGEE. THIS IS MAYBE THE WAY! Could test if we get x readings close to 0.
 }
+
 int App::m_deployCharges() {
     return 0;
 }
+
 int App::m_detectLanding() {
     float accelVector = sqrt((sq(m_sensors.mymeasurements.accel[0]) + sq(m_sensors.mymeasurements.accel[1]) + sq(m_sensors.mymeasurements.accel[2])));
     if ((accelVector > 9) && (accelVector < 11) ) {
+        m_mem.logSD("Landing Detected");
         return 1;
     }
     
     return 0;    
+    //WE COULD ALSO TRY USING THE DERIVATIVE TO TEST FOR landing. THIS IS MAYBE THE WAY! Could test if we get x readings close to 0.
 }
 
 App myApp;

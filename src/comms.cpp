@@ -9,6 +9,7 @@
 
 /*** Includes ***/
 #include "comms.h"
+#include "memory.h"
 
 /*** Constructor implementation ***/
 Comms::Comms() {
@@ -160,13 +161,11 @@ void Comms::onReceive(int packetSize) {
     // for (int i = 0; i < packetSize; i++) {
     //     m_comms.rxBuf[index++] = LoRa.read();
     // }
-
-  Serial.println("Message Received!");
 }
 
 void Comms::onTxDone() {
-  Serial.println("Packet Sent Done");
   LoRa.receive();
+  m_mem.logSD("Message sent");
 }
 
 Comms m_comms;

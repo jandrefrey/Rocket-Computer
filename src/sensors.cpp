@@ -48,6 +48,9 @@ int Sensors::calib() {
 
 int Sensors::measure() {
 
+    //time
+    mymeasurements.time = millis();
+
     //uint32_t time = micros();
 
     //Accel and Gyro
@@ -67,7 +70,9 @@ int Sensors::measure() {
         //Serial.println(mymeasurements.bpressure);
         //mymeasurements.alt = bmp.readAltitude(SEALEVELPRESSURE_HPA);
     }
-    filter();
+    //filter();
+    mymeasurements.bpresurre_filtered = mymeasurements.bpressure;                   //LETS TRY NOT FILTERING. THE SENSORS IS DOING OWN FILTERING.
+
 
     //Magnetometer
     if (myMag.isDataReady())
@@ -92,9 +97,6 @@ int Sensors::measure() {
     scaledZ = (double)currentZ - 131072.0;
     scaledZ /= 131072.0;
     mymeasurements.mag[2] = (float)scaledZ * 8;
-
-    //time
-    mymeasurements.time = millis();
 
     //Serial.println(micros() - time);           //takes about 350us
     return 0;
@@ -127,9 +129,9 @@ int Sensors::bmp390Init() {
     if (! bmp.begin_SPI(BMP_CS)) {  // hardware SPI mode  
         Serial.println("BMP390 Error");
     } else {
-        bmp.setTemperatureOversampling(BMP3_OVERSAMPLING_8X);
-        bmp.setPressureOversampling(BMP3_OVERSAMPLING_4X);
-        bmp.setIIRFilterCoeff(BMP3_IIR_FILTER_COEFF_15);
+        bmp.setTemperatureOversampling(BMP3_OVERSAMPLING_2X);
+        bmp.setPressureOversampling(BMP3_OVERSAMPLING_32X);
+        bmp.setIIRFilterCoeff(BMP3_IIR_FILTER_COEFF_63);
         bmp.setOutputDataRate(BMP3_ODR_200_HZ);
 
         bmp.setSensorSettings();

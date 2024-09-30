@@ -31,6 +31,8 @@ Hardware::~Hardware()
 /*** Public Functions definitions ***/
 int Hardware::init()
 {
+    SPI.begin();
+
     pinMode(4, OUTPUT);
     tone(4, 200);
     delay(200);
@@ -42,43 +44,48 @@ int Hardware::init()
     delay(200);
     noTone(4);     // Stop sound...
 
+    // if (m_mem.flashInit() != 0) {
+    //     Serial.println("Flash init failed. HALT!");
+    //     while(1);
+    // }
+    if (m_mem.sdInit() != 0) {
+        Serial.println("SD init failed. HALT!");
+        while(1);
+    }
+
     pinMode(PYRO_PIN_1, OUTPUT);
     digitalWrite(PYRO_PIN_1, LOW);
     pinMode(PYRO_PIN_2, OUTPUT);
     digitalWrite(PYRO_PIN_2, LOW);
 
-    SPI.begin();
-
-    Serial.print("Battery Voltage: ");
-    Serial.println(m_batteryCheck());
+    char str[22];
+    sprintf(str, "Battery Voltage: %.2f", m_batteryCheck());
+    m_mem.logSD(str);
+    
     if(m_batteryCheck() < BATTERY_MINIMUM) {
-        Serial.println("Battery voltage low. HALT!");
+        m_mem.logSD("Battery voltage low. HALT!");
         while(1);
     }
 
     #ifdef USE_PYRO_1
     if(m_pyroCheck() != 0b00001000 || m_pyroCheck() != 0b00001100) {
-        Serial.println("Pyro 1 Continuity Failed!");
+        m_mem.logSD("Pyro 1 Continuity Failed!");
         while(1);
     }
     #endif
     #ifdef USE_PYRO_2
     if(m_pyroCheck() != 0b00000100 || m_pyroCheck() != 0b00001100) {
-        Serial.println("Pyro 2 Continuity Failed!");
+        m_mem.logSD("Pyro 2 Continuity Failed!");
         while(1);
     }
     #endif
 
     if (m_comms.init() != 0) {  //no send and receive check here. This will be added in the state machine for ground idle.
-        Serial.println("Radio init failed. HALT!");
+        m_mem.logSD("Radio init failed. HALT!");
         while(1);
     }
     if (m_sensors.init() != 0) {
-        Serial.println("Sensor init failed. HALT!");
-        while(1);
-    }
-    if (m_mem.init() != 0) {
-        Serial.println("Memory init failed. HALT!");
+        m_mem.logSD("Sensor init failed. HALT!");
         while(1);
     }
     return 0;    
@@ -117,24 +124,21 @@ void Hardware::update()
     
     m_comms.parseRx(mymessage);
     if(mymessage.message_available == 1) {
-        //Serial.println("hardware received message");
         switch (mymessage.messagetype)
         {
         case (Comms::COMMAND):
+            m_mem.logSD("Command received");
             //Serial.println(mymessage.pData[0]);
             //Serial.println(mymessage.pData[1]);
             if(mymessage.pData[0] == FIRE_PYRO_C) {
-                myApp.m_flightStage = App::APOGEE;      //DONT LIKE THIS IMPLEMENTATION
-                pyroDeploy = 1;
-                myHardware.buzzerMode = Hardware::QUICK_BEEPS;
-                myApp.timeDebug = millis();
+                myApp.m_flightStage = App::APOGEE;
             }
             else {
-                Serial.println("Command not recognised");
+                m_mem.logSD("Command not recognised");
             }
             break;
         default:
-            Serial.println("Message type not recognised");
+            m_mem.logSD("Message type not recognised");
             break;
         }
         mymessage.message_available = 0;
