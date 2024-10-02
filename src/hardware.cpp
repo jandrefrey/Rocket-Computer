@@ -68,13 +68,13 @@ int Hardware::init()
     }
 
     #ifdef USE_PYRO_1
-    if(m_pyroCheck() != 0b00001000 || m_pyroCheck() != 0b00001100) {
+    if((m_pyroCheck() & 0b00001000) != 0b00001000) {
         m_mem.logSD("Pyro 1 Continuity Failed!");
         while(1);
     }
     #endif
     #ifdef USE_PYRO_2
-    if(m_pyroCheck() != 0b00000100 || m_pyroCheck() != 0b00001100) {
+    if((m_pyroCheck() & 0b0000100) != 0b00000100) {
         m_mem.logSD("Pyro 2 Continuity Failed!");
         while(1);
     }
@@ -95,32 +95,6 @@ void Hardware::update()
 {
     //int time = millis();
     m_sensors.measure();
-    //int measuredtime = millis() - time;
-    // Serial.print("Measuredtime:");
-    // Serial.println(measuredtime);    //Takes 9ms to measure
-    
-    // Serial.print("AccelX");
-    // Serial.println(mymeasurements.accelx);
-    // Serial.print("AccelY");
-    // Serial.println(mymeasurements.accely);
-    // Serial.print("AccelZ");
-    // Serial.println(mymeasurements.accelz);
-    // Serial.print("GyroX");
-    // Serial.println(mymeasurements.gyrox);
-    // Serial.print("GyroY");
-    // Serial.println(mymeasurements.gyroy);
-    // Serial.print("GyroZ");
-    // Serial.println(mymeasurements.gyroz);
-    // Serial.print("MagnX");
-    // Serial.println(mymeasurements.magx);
-    // Serial.print("MagnY");
-    // Serial.println(mymeasurements.magy);
-    // Serial.print("MagnZ");
-    // Serial.println(mymeasurements.magz);
-    // Serial.print("Baro");
-    // Serial.println(mymeasurements.bpressure);
-    // delay(500);
-    //m_batteryCheck();
     
     m_comms.parseRx(mymessage);
     if(mymessage.message_available == 1) {
@@ -156,13 +130,17 @@ uint8_t Hardware::m_pyroCheck() {
     uint8_t pyroStatus = 0b00000000;
 
     float voltage = analogRead(A6) * (3.3 / 1023.0) * (150+47)/47;
+    //Serial.println(voltage);
     if(voltage > (BATTERY_MINIMUM-3)) {
-        pyroStatus = pyroStatus | 0b00001000;
+        pyroStatus = pyroStatus | 0b00001000;       //pyro 1 continuity
+        //Serial.println("pyro 1 passed");
     }
 
     voltage = analogRead(A8) * (3.3 / 1023.0) * (150+47)/47;
+    //Serial.println(voltage);
     if(voltage > (BATTERY_MINIMUM-3)) {
-        pyroStatus = pyroStatus | 0b00000100;
+        pyroStatus = pyroStatus | 0b00000100;       //pyro 2 continuity
+        //Serial.println("pyro 2 passed");
     }
 
     if(pyro1State) {

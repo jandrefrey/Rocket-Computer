@@ -26,6 +26,8 @@ void App::init() {
 
     prevTickTX = millis();
     prevTickSD = millis();
+
+    positiveCount = 0;
 }
 
 void App::update() {
@@ -34,13 +36,13 @@ void App::update() {
     //Log Data
     if((millis() - prevTickSD) > LOG_FREQ) {
         m_mem.logTelemetry(m_sensors.mymeasurements.accel, m_sensors.mymeasurements.gyro, m_sensors.mymeasurements.mag,
-        m_sensors.mymeasurements.bpressure, m_sensors.mymeasurements.bpresurre_filtered, m_sensors.mymeasurements.time);
+        m_sensors.mymeasurements.bpressure, m_sensors.mymeasurements.bpresurre_vel, m_sensors.mymeasurements.time);
         prevTickSD = millis();
     }
     //Tx Data
     if((millis() - prevTickTX) > TX_FREQ) {
         m_comms.setTelemetry(m_sensors.mymeasurements.accel, m_sensors.mymeasurements.gyro, m_sensors.mymeasurements.mag,
-        m_sensors.mymeasurements.bpressure, m_sensors.mymeasurements.bpresurre_filtered, m_sensors.mymeasurements.time, myHardware.m_pyroCheck(), myHardware.m_batteryCheck());
+        m_sensors.mymeasurements.bpressure, m_sensors.mymeasurements.bpresurre_vel, m_sensors.mymeasurements.time, myHardware.m_pyroCheck(), myHardware.m_batteryCheck());
         prevTickTX = millis();
     }
 
@@ -57,7 +59,7 @@ void App::update() {
     }
     if (m_flightStage == LAUNCH) {
         //Update State
-        if(detectApogee(m_sensors.mymeasurements.bpresurre_filtered)) {
+        if(detectApogee()) {
             m_flightStage = APOGEE;
             myHardware.pyroDeploy = 1;
             myHardware.buzzerMode = Hardware::QUICK_BEEPS;
@@ -116,9 +118,6 @@ void App::update() {
 }
 
 /*** Private Functions definitions ***/
-int App::m_setLaunchReady() {
-    return 0;
-}
 
 int App::m_detectLaunch() {
     float accelVector = sqrt((sq(m_sensors.mymeasurements.accel[0]) + sq(m_sensors.mymeasurements.accel[1]) + sq(m_sensors.mymeasurements.accel[2])));
@@ -129,39 +128,45 @@ int App::m_detectLaunch() {
     return 0;
 }
 
-int App::detectBurnout() {
-    return 0;
-}
+int App::detectApogee() {
+    // if(((pressure - pressurePrev) > 0.4) && (pressurePrev != 0)) {
+    //     m_mem.logSD("Apogee Detected");
+    //     return 1;
+    // }
 
-int App::detectApogee(float pressure) {
-    if(((pressure - pressurePrev) > 0.4) && (pressurePrev != 0)) {
+    // if(apogeeCounter > 10) {
+    //     pressurePrev = pressure;
+    //     apogeeCounter = 0;
+    // }
+    // apogeeCounter++;
+    if(m_sensors.mymeasurements.bpresurre_vel > 0.005) {        //pressure will increase going down, ie positive velocity
+        positiveCount++;
+    }
+    if(positiveCount > COUNT_THRESHOLD){
+        positiveCount = 0;
         m_mem.logSD("Apogee Detected");
         return 1;
     }
-
-    if(apogeeCounter > 10) {
-        pressurePrev = pressure;
-        apogeeCounter = 0;
-    }
-    apogeeCounter++;
     
-    return 0;
-    //WE COULD ALSO TRY USING THE DERIVATIVE TO TEST FOR APOGEE. THIS IS MAYBE THE WAY! Could test if we get x readings close to 0.
-}
-
-int App::m_deployCharges() {
     return 0;
 }
 
 int App::m_detectLanding() {
-    float accelVector = sqrt((sq(m_sensors.mymeasurements.accel[0]) + sq(m_sensors.mymeasurements.accel[1]) + sq(m_sensors.mymeasurements.accel[2])));
-    if ((accelVector > 9) && (accelVector < 11) ) {
+    // float accelVector = sqrt((sq(m_sensors.mymeasurements.accel[0]) + sq(m_sensors.mymeasurements.accel[1]) + sq(m_sensors.mymeasurements.accel[2])));
+    // if ((accelVector > 9) && (accelVector < 11) ) {
+    //     m_mem.logSD("Landing Detected");
+    //     return 1;
+    // }
+    if((m_sensors.mymeasurements.bpresurre_vel > -0.0005) && (m_sensors.mymeasurements.bpresurre_vel < 0.0005)) {        //pressure will increase going down, ie positive velocity
+        positiveCount++;
+    }
+    if(positiveCount > COUNT_THRESHOLD){
+        positiveCount = 0;
         m_mem.logSD("Landing Detected");
         return 1;
     }
-    
+
     return 0;    
-    //WE COULD ALSO TRY USING THE DERIVATIVE TO TEST FOR landing. THIS IS MAYBE THE WAY! Could test if we get x readings close to 0.
 }
 
 App myApp;

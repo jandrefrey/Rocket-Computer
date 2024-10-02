@@ -54,13 +54,13 @@ int Memory::sdInit() {
     }
 }
 
-int Memory::flashInit() {
-    return 0;
-}
+// int Memory::flashInit() {
+//     return 0;
+// }
 
-int Memory::writeFlash() {
-    return 0;
-}
+// int Memory::writeFlash() {
+//     return 0;
+// }
 
 int Memory::logTelemetry(float accel[], float gyro[], float magn[], float baro_raw, float baro_filt, uint32_t time) {
     telemetryFile = SD.open("TELEMETRY.csv", FILE_WRITE);
@@ -70,10 +70,6 @@ int Memory::logTelemetry(float accel[], float gyro[], float magn[], float baro_r
     ((float)time)/1000, accel[0], accel[1], accel[2], gyro[0], gyro[1], gyro[2], baro_raw, baro_filt, magn[0], magn[1], magn[2]);
     telemetryFile.close();
 
-    return 0;
-}
-
-int Memory::setFlash() {
     return 0;
 }
 

@@ -42,7 +42,8 @@ int Sensors::calib() {
     while (!bmp.performReading()) {
         //do nothing
     }
-    mymeasurements.bpresurre_filtered_prev = bmp.pressure / 100.0;      //set the filtered pressure to the init pressure. Else it will be 0.
+    bpressure_prev = bmp.pressure / 100.0;      //set the filtered pressure to the init pressure. Else it will be 0.
+    bmpTime_prev = micros();
     return 0;
 }
 
@@ -66,13 +67,11 @@ int Sensors::measure() {
 
     //Baro   
     if (bmp.performReading()) {
+        bmpTime = micros();
         mymeasurements.bpressure = bmp.pressure / 100.0;      //measured in hPa
-        //Serial.println(mymeasurements.bpressure);
-        //mymeasurements.alt = bmp.readAltitude(SEALEVELPRESSURE_HPA);
+        //mymeasurements.bpressure = 44330.0 * (1.0 - pow((bmp.pressure / 100.0) / SEALEVELPRESSURE_HPA, 0.1903));
     }
-    //filter();
-    mymeasurements.bpresurre_filtered = mymeasurements.bpressure;                   //LETS TRY NOT FILTERING. THE SENSORS IS DOING OWN FILTERING.
-
+    filter();
 
     //Magnetometer
     if (myMag.isDataReady())
@@ -103,9 +102,12 @@ int Sensors::measure() {
 }
 
 void Sensors::filter() {
-    // mymeasurements.bpresurre_filtered = mymeasurements.bpresurre_filtered_prev + ((mymeasurements.bpressure-mymeasurements.bpresurre_filtered_prev)/32);
-    mymeasurements.bpresurre_filtered = mymeasurements.bpresurre_filtered_prev + ((mymeasurements.bpressure-mymeasurements.bpresurre_filtered_prev)/128);
-    mymeasurements.bpresurre_filtered_prev = mymeasurements.bpresurre_filtered;
+    if(mymeasurements.bpressure != bpressure_prev) {
+        mymeasurements.bpresurre_vel = (1000000*(mymeasurements.bpressure - bpressure_prev))/(bmpTime-bmpTime_prev);
+        bmpTime_prev = bmpTime;
+        bpressure_prev = mymeasurements.bpressure;
+        //Serial.println(mymeasurements.bpresurre_vel);
+    }
 }
 
 
@@ -186,60 +188,60 @@ int Sensors::mmc598Init() {
 //     _time_old = mymeasurements.time;
 // }
 
-void Sensors::getMeasures() {
+// void Sensors::getMeasures() {
 
-    //uint32_t time = micros();
+//     //uint32_t time = micros();
 
-    //Accel and Gyro
-    sensors_event_t accel;
-    sensors_event_t gyro;
-    sensors_event_t temp;
+//     //Accel and Gyro
+//     sensors_event_t accel;
+//     sensors_event_t gyro;
+//     sensors_event_t temp;
 
-    if(m_sensors.dso32.accelerationAvailable() && m_sensors.dso32.gyroscopeAvailable()) {
-        m_sensors.dso32.getEvent(&accel, &gyro, &temp);
-    }
-    m_sensors.mymeasurements.accel[0] = accel.acceleration.x;  //acceleration is measured in m/s^2
-    m_sensors.mymeasurements.accel[1] = accel.acceleration.y;
-    m_sensors.mymeasurements.accel[2] = accel.acceleration.z;
-    m_sensors.mymeasurements.gyro[0] = gyro.gyro.x;            //rotation is measured in rad/s
-    m_sensors.mymeasurements.gyro[1] = gyro.gyro.y;
-    m_sensors.mymeasurements.gyro[2] = gyro.gyro.z;
+//     if(m_sensors.dso32.accelerationAvailable() && m_sensors.dso32.gyroscopeAvailable()) {
+//         m_sensors.dso32.getEvent(&accel, &gyro, &temp);
+//     }
+//     m_sensors.mymeasurements.accel[0] = accel.acceleration.x;  //acceleration is measured in m/s^2
+//     m_sensors.mymeasurements.accel[1] = accel.acceleration.y;
+//     m_sensors.mymeasurements.accel[2] = accel.acceleration.z;
+//     m_sensors.mymeasurements.gyro[0] = gyro.gyro.x;            //rotation is measured in rad/s
+//     m_sensors.mymeasurements.gyro[1] = gyro.gyro.y;
+//     m_sensors.mymeasurements.gyro[2] = gyro.gyro.z;
 
-    //Baro   
-    if (m_sensors.bmp.performReading()) {
-        m_sensors.mymeasurements.bpressure = m_sensors.bmp.pressure / 100.0;      //measured in hPa
-        //mymeasurements.alt = bmp.readAltitude(SEALEVELPRESSURE_HPA);
-    }
+//     //Baro   
+//     if (m_sensors.bmp.performReading()) {
+//         m_sensors.mymeasurements.bpressure = m_sensors.bmp.pressure / 100.0;      //measured in hPa
+//         //mymeasurements.alt = bmp.readAltitude(SEALEVELPRESSURE_HPA);
+//     }
 
-    //Magnetometer
-    uint32_t currentX = 0;
-    uint32_t currentY = 0;
-    uint32_t currentZ = 0;
-    double scaledX = 0;
-    double scaledY = 0;
-    double scaledZ = 0;
-    if (m_sensors.myMag.isDataReady())
-    {
-        m_sensors.myMag.readFieldsXYZ(&currentX, &currentY, &currentZ);
-        m_sensors.myMag.startMeasurement();
-    }
-    scaledX = (double)currentX - 131072.0;
-    scaledX /= 131072.0;
-    m_sensors.mymeasurements.mag[0] = scaledX * 8; // The magnetometer full scale is +/- 8 Gauss. Multiply the scaled values by 8 to convert to Gauss
-    //Serial.println(m_sensors.mymeasurements.mag[0]);
-    scaledY = (double)currentY - 131072.0;
-    scaledY /= 131072.0;
-    m_sensors.mymeasurements.mag[1] = scaledY * 8;
-    //Serial.println(m_sensors.mymeasurements.mag[1]);
-    scaledZ = (double)currentZ - 131072.0;
-    scaledZ /= 131072.0;
-    m_sensors.mymeasurements.mag[2] = scaledZ * 8;
-    //Serial.println(m_sensors.mymeasurements.mag[2]);
+//     //Magnetometer
+//     uint32_t currentX = 0;
+//     uint32_t currentY = 0;
+//     uint32_t currentZ = 0;
+//     double scaledX = 0;
+//     double scaledY = 0;
+//     double scaledZ = 0;
+//     if (m_sensors.myMag.isDataReady())
+//     {
+//         m_sensors.myMag.readFieldsXYZ(&currentX, &currentY, &currentZ);
+//         m_sensors.myMag.startMeasurement();
+//     }
+//     scaledX = (double)currentX - 131072.0;
+//     scaledX /= 131072.0;
+//     m_sensors.mymeasurements.mag[0] = scaledX * 8; // The magnetometer full scale is +/- 8 Gauss. Multiply the scaled values by 8 to convert to Gauss
+//     //Serial.println(m_sensors.mymeasurements.mag[0]);
+//     scaledY = (double)currentY - 131072.0;
+//     scaledY /= 131072.0;
+//     m_sensors.mymeasurements.mag[1] = scaledY * 8;
+//     //Serial.println(m_sensors.mymeasurements.mag[1]);
+//     scaledZ = (double)currentZ - 131072.0;
+//     scaledZ /= 131072.0;
+//     m_sensors.mymeasurements.mag[2] = scaledZ * 8;
+//     //Serial.println(m_sensors.mymeasurements.mag[2]);
 
-    //time
-    m_sensors.mymeasurements.time = millis();
+//     //time
+//     m_sensors.mymeasurements.time = millis();
 
-    //Serial.println(micros() - time);           //takes about 350us
-}
+//     //Serial.println(micros() - time);           //takes about 350us
+// }
 
 Sensors m_sensors;

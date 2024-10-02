@@ -30,8 +30,6 @@
 #define BMP_CS 10
 #define SEALEVELPRESSURE_HPA (1013.25)
 
-#define SENSOR_READ_RATE 100000 //Microseconds
-
 #define MMC_CS 9
 
 //Global variables
@@ -48,8 +46,7 @@ public:
         float gyro[3];
         float mag[3];
         float bpressure;
-        float bpresurre_filtered;
-        float bpresurre_filtered_prev;
+        float bpresurre_vel;
         int32_t time; 
     };
 
@@ -74,7 +71,7 @@ public:
     int measure();
     void filter();
     // int integrateMeasures();
-    static void getMeasures();
+    // static void getMeasures();
 
 
 private:
@@ -104,6 +101,10 @@ private:
     // float _accel_old[3];
     // float _vel_old[3];
     // float _gyro_old[3];
+    
+    uint32_t bmpTime;
+    uint32_t bmpTime_prev;
+    float bpressure_prev;
 
 };
 

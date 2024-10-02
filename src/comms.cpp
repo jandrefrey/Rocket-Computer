@@ -165,7 +165,6 @@ void Comms::onReceive(int packetSize) {
 
 void Comms::onTxDone() {
   LoRa.receive();
-  m_mem.logSD("Message sent");
 }
 
 Comms m_comms;

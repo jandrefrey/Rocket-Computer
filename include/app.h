@@ -11,8 +11,9 @@
 #ifndef APP_H
 #define APP_H
 
-#define     TX_FREQ     1000
-#define     LOG_FREQ    1
+#define     TX_FREQ     100
+#define     LOG_FREQ    10
+#define     COUNT_THRESHOLD  5
 #define     DEBUG
 
 /*** Includes ***/
@@ -52,11 +53,10 @@ private:
     float pressurePrev;
     uint32_t apogeeCounter;
 
-    int m_setLaunchReady();
+    int positiveCount;
+
     int m_detectLaunch();
-    int detectBurnout();
-    int detectApogee(float pressure);
-    int m_deployCharges();
+    int detectApogee();
     int m_detectLanding();
 };
 

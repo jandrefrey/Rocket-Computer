@@ -14,7 +14,7 @@
 #define     BATTERY_MINIMUM     5.5
 #define     PYRO_PIN_1          21
 #define     PYRO_PIN_2          23
-//#define     USE_PYRO_1
+#define     USE_PYRO_1
 //#define     USE_PYRO_2
 #define     PYRO_ON_TIME        500000
 

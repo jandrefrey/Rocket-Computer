@@ -26,10 +26,10 @@ public:
     ~Memory(); // Destructor
 
     int sdInit();
-    int flashInit();
-    int writeFlash();
+    //int flashInit();
+    //int writeFlash();
     int logTelemetry(float accel[], float gyro[], float magn[], float baro_raw, float baro_filt, uint32_t time);
-    int setFlash();
+    //int setFlash();
     int logSD(const char text[]);
 
     File logFile;
