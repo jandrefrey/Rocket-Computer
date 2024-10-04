@@ -13,7 +13,7 @@
 
 #define     TX_FREQ     100
 #define     LOG_FREQ    10
-#define     COUNT_THRESHOLD  5
+#define     COUNT_THRESHOLD  10
 #define     DEBUG
 
 /*** Includes ***/

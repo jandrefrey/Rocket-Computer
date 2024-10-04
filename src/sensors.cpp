@@ -68,8 +68,9 @@ int Sensors::measure() {
     //Baro   
     if (bmp.performReading()) {
         bmpTime = micros();
-        mymeasurements.bpressure = bmp.pressure / 100.0;      //measured in hPa
-        //mymeasurements.bpressure = 44330.0 * (1.0 - pow((bmp.pressure / 100.0) / SEALEVELPRESSURE_HPA, 0.1903));
+        //mymeasurements.bpressure = bmp.pressure / 100.0;      //measured in hPa
+        mymeasurements.bpressure = 44330.0 * (1.0 - pow((bmp.pressure / 100.0) / SEALEVELPRESSURE_HPA, 0.1903));
+        //Serial.println(mymeasurements.bpressure);
     }
     filter();
 

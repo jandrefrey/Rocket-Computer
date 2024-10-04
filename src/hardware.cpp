@@ -102,8 +102,6 @@ void Hardware::update()
         {
         case (Comms::COMMAND):
             m_mem.logSD("Command received");
-            //Serial.println(mymessage.pData[0]);
-            //Serial.println(mymessage.pData[1]);
             if(mymessage.pData[0] == FIRE_PYRO_C) {
                 myApp.m_flightStage = App::APOGEE;
             }
