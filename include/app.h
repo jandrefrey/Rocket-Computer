@@ -13,8 +13,8 @@
 
 #define     TX_FREQ     100
 #define     LOG_FREQ    10
-#define     COUNT_THRESHOLD  10
-#define     DEBUG
+#define     COUNT_THRESHOLD  1
+//#define     DEBUG
 
 /*** Includes ***/
 #include <Arduino.h>

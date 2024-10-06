@@ -67,12 +67,16 @@ int Sensors::measure() {
 
     //Baro   
     if (bmp.performReading()) {
+        bmpTime_prev = bmpTime;
         bmpTime = micros();
         //mymeasurements.bpressure = bmp.pressure / 100.0;      //measured in hPa
         mymeasurements.bpressure = 44330.0 * (1.0 - pow((bmp.pressure / 100.0) / SEALEVELPRESSURE_HPA, 0.1903));
         //Serial.println(mymeasurements.bpressure);
+        if(bmpTime_prev != 0) {
+            filter();
+        }
     }
-    filter();
+    //filter();
 
     //Magnetometer
     if (myMag.isDataReady())
@@ -103,12 +107,34 @@ int Sensors::measure() {
 }
 
 void Sensors::filter() {
-    if(mymeasurements.bpressure != bpressure_prev) {
-        mymeasurements.bpresurre_vel = (1000000*(mymeasurements.bpressure - bpressure_prev))/(bmpTime-bmpTime_prev);
-        bmpTime_prev = bmpTime;
-        bpressure_prev = mymeasurements.bpressure;
-        //Serial.println(mymeasurements.bpresurre_vel);
-    }
+    //if((bmpTime != bmpTime_prev) && (bmpTime_prev != 0)) {
+        // mymeasurements.bpresurre_vel = (1000000*(mymeasurements.bpressure - bpressure_prev))/(bmpTime-bmpTime_prev);
+        // bmpTime_prev = bmpTime;
+        // bpressure_prev = mymeasurements.bpressure;
+        if(x_hat_prev_1 == 0) {
+            x_hat_prev_1 = mymeasurements.bpressure;
+        }
+
+        float K_1 = 0.25;
+        float K_2 = 0.35;
+        float K_3 = 0.16;
+        float dT = ((float)(bmpTime-bmpTime_prev))/1000000;
+
+        float x_prop_1 = x_hat_prev_1 + (dT)*(x_hat_prev_2) + (pow(dT, 2)/2)*(x_hat_prev_3);
+        float x_prop_2 = x_hat_prev_2 + (dT)*(x_hat_prev_3);
+        float x_prop_3 = x_hat_prev_3;
+
+        float x_hat_1 = x_prop_1 + K_1*(mymeasurements.bpressure-x_prop_1);
+        float x_hat_2 = x_prop_2 + K_2*(mymeasurements.bpressure-x_prop_1);
+        float x_hat_3 = x_prop_3 + K_3*(mymeasurements.bpressure-x_prop_1);
+
+        mymeasurements.bpresurre_vel = x_hat_2;
+        x_hat_prev_1 = x_hat_1;
+        x_hat_prev_2 = x_hat_2;
+        x_hat_prev_3 = x_hat_3;
+
+        Serial.println(x_hat_2);
+    //}
 }
 
 
@@ -134,7 +160,7 @@ int Sensors::bmp390Init() {
     } else {
         bmp.setTemperatureOversampling(BMP3_OVERSAMPLING_2X);
         bmp.setPressureOversampling(BMP3_OVERSAMPLING_32X);
-        bmp.setIIRFilterCoeff(BMP3_IIR_FILTER_COEFF_63);
+        bmp.setIIRFilterCoeff(BMP3_IIR_FILTER_DISABLE);
         bmp.setOutputDataRate(BMP3_ODR_200_HZ);
 
         bmp.setSensorSettings();

@@ -139,7 +139,7 @@ int App::detectApogee() {
     //     apogeeCounter = 0;
     // }
     // apogeeCounter++;
-    if(m_sensors.mymeasurements.bpresurre_vel < -0.1) {        //pressure will increase going down, ie positive velocity
+    if(m_sensors.mymeasurements.bpresurre_vel < -1) {        //pressure will increase going down, ie positive velocity
         positiveCount++;
     }
     if(positiveCount > COUNT_THRESHOLD){
@@ -157,7 +157,7 @@ int App::m_detectLanding() {
     //     m_mem.logSD("Landing Detected");
     //     return 1;
     // }
-    if((m_sensors.mymeasurements.bpresurre_vel > -0.02) && (m_sensors.mymeasurements.bpresurre_vel < 0.02)) {        //pressure will increase going down, ie positive velocity
+    if((m_sensors.mymeasurements.bpresurre_vel > -0.2) && (m_sensors.mymeasurements.bpresurre_vel < 0.2)) {        //pressure will increase going down, ie positive velocity
         positiveCount++;
     }
     if(positiveCount > COUNT_THRESHOLD){

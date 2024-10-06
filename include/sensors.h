@@ -106,6 +106,10 @@ private:
     uint32_t bmpTime_prev;
     float bpressure_prev;
 
+    float x_hat_prev_1;
+    float x_hat_prev_2;
+    float x_hat_prev_3;
+
 };
 
 extern Sensors m_sensors;
