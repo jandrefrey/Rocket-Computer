@@ -11,7 +11,7 @@
 #ifndef APP_H
 #define APP_H
 
-#define     TX_FREQ     100
+#define     TX_FREQ     200
 #define     LOG_FREQ    10
 #define     COUNT_THRESHOLD  1
 //#define     DEBUG

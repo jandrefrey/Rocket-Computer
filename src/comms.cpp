@@ -103,7 +103,7 @@ int Comms::setTelemetry(float accel[], float gyro[], float magn[], float baro_ra
     txBuf[22] = ((uint16_t)(baro_filt*10)>> 8) & 0xFF;
     txBuf[23] = ((uint16_t)(baro_filt*10)) & 0xFF;
 
-    txBuf[24] = (time >> 24) & 0xFFF;
+    txBuf[24] = (time >> 24) & 0xFF;
     txBuf[25] = (time >> 16) & 0xFF;
     txBuf[26] = (time >> 8) & 0xFF;
     txBuf[27] = (time) & 0xFF;

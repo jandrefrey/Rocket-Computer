@@ -133,7 +133,7 @@ void Sensors::filter() {
         x_hat_prev_2 = x_hat_2;
         x_hat_prev_3 = x_hat_3;
 
-        Serial.println(x_hat_2);
+        //Serial.println(x_hat_2);
     //}
 }
 
